@@ -39,6 +39,9 @@ importers:
       '@nuxtjs/tailwindcss':
         specifier: ^6.14.0
         version: 6.14.0(magicast@0.3.5)
+      '@tailwindcss/postcss':
+        specifier: ^4.1.13
+        version: 4.1.13
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.6)
@@ -61,13 +64,13 @@ importers:
         specifier: ^3.6.2
         version: 3.6.2
       tailwindcss:
-        specifier: ^3.4.17
-        version: 3.4.17
+        specifier: ^4.1.13
+        version: 4.1.13
 
 packages:
 
-  '@ai-sdk/gateway@1.0.19':
-    resolution: {integrity: sha512-TYLxx8Sclr/RdB0RIwGmA8OtJtyJxoPGtrTYgwrbzM2GdtwYtUuA/UIc4tZyCeyR1ujfqjbqiIF3kB54zGRD3A==}
+  '@ai-sdk/gateway@1.0.20':
+    resolution: {integrity: sha512-2K0kGnHyLfT1v2+3xXbLqohfWBJ/vmIh1FTWnrvZfvuUuBdOi2DMgnSQzkLvFVLyM8mhOcx+ZwU6IOOsuyOv/w==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
@@ -82,8 +85,8 @@ packages:
     resolution: {integrity: sha512-6o7Y2SeO9vFKB8lArHXehNuusnpddKPk7xqL7T2/b+OvXMRIXUO1rR4wcv1hAFUAT9avGZshty3Wlua/XA7TvA==}
     engines: {node: '>=18'}
 
-  '@ai-sdk/vue@2.0.37':
-    resolution: {integrity: sha512-0FokXtl8eWAxzAQRgEKtOSQnPUvvcQ3OQS5aRcjZJwdZEFG4xWXZISaBlzrUdqUg1xGtPZDTN5QVJQQou74MzQ==}
+  '@ai-sdk/vue@2.0.39':
+    resolution: {integrity: sha512-AH6RZXpkgmW+7H6tHCuqWTaorSsVrJ5G5mo/PidKkMtNuNlzzc/tYpTTzuxYo2RWg3mAzuX4ECJ3Uw/NmqePRA==}
     engines: {node: '>=18'}
     peerDependencies:
       vue: ^3.3.4
@@ -1735,8 +1738,8 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
-  ai@5.0.37:
-    resolution: {integrity: sha512-6QJEoLvynMBdk+vC/HT3Ry4w9DjhTKlC2PU+XZU/5z5QPGkGVloby7LJtzNYDOA41OltH+JOohSYqg/9phFwqg==}
+  ai@5.0.39:
+    resolution: {integrity: sha512-1AOjTHY8MUY4T/X/I+otGTbvKmMQCCGWffuVDyQ21l/2Vv/QoLZcw+ZZHVvp+wvQcPOsfXjURGSFZtin7rnghA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
@@ -2369,8 +2372,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  electron-to-chromium@1.5.214:
-    resolution: {integrity: sha512-TpvUNdha+X3ybfU78NoQatKvQEm1oq3lf2QbnmCEdw+Bd9RuIAY+hJTvq1avzHM0f7EJfnH3vbCnbzKzisc/9Q==}
+  electron-to-chromium@1.5.215:
+    resolution: {integrity: sha512-TIvGp57UpeNetj/wV/xpFNpWGb0b/ROw372lHPx5Aafx02gjTBtWnEEcaSX3W2dLM3OSdGGyHX/cHl01JQsLaQ==}
 
   embla-carousel-auto-height@8.6.0:
     resolution: {integrity: sha512-/HrJQOEM6aol/oF33gd2QlINcXy3e19fJWvHDuHWp2bpyTa+2dm9tVVJak30m2Qy6QyQ6Fc8DkImtv7pxWOJUQ==}
@@ -4362,8 +4365,8 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
-  run-applescript@7.0.0:
-    resolution: {integrity: sha512-9by4Ij99JUr/MCFBUkDKLWK3G9HVXmabKz9U5MlIAIuvuzkiOicRYs8XJLxX+xahD+mLiiCYDqF9dKAgtzKP1A==}
+  run-applescript@7.1.0:
+    resolution: {integrity: sha512-DPe5pVFaAsinSaV6QjQ6gdiedWDcRCbUuiQfQa2wmWV7+xC9bGulGI8+TdRmoFkAPaBXk8CrAbnlY2ISniJ47Q==}
     engines: {node: '>=18'}
 
   run-parallel@1.2.0:
@@ -4664,8 +4667,8 @@ packages:
   tailwind-merge@3.3.1:
     resolution: {integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==}
 
-  tailwind-variants@3.1.0:
-    resolution: {integrity: sha512-ieiYaEfUr+sNhw/k++dosmZfVA4VIG5bV+G1eGdJSC4FcflqQv0iSIlOLj/RbzRuTu/VrIiNSlwh1esBM3BXUg==}
+  tailwind-variants@3.1.1:
+    resolution: {integrity: sha512-ftLXe3krnqkMHsuBTEmaVUXYovXtPyTK7ckEfDRXS8PBZx0bAUas+A0jYxuKA5b8qg++wvQ3d2MQ7l/xeZxbZQ==}
     engines: {node: '>=16.x', pnpm: '>=7.x'}
     peerDependencies:
       tailwind-merge: '>=3.0.0'
@@ -5278,7 +5281,7 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/gateway@1.0.19(zod@4.1.5)':
+  '@ai-sdk/gateway@1.0.20(zod@4.1.5)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.8(zod@4.1.5)
@@ -5295,10 +5298,10 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/vue@2.0.37(vue@3.5.21(typescript@5.9.2))(zod@4.1.5)':
+  '@ai-sdk/vue@2.0.39(vue@3.5.21(typescript@5.9.2))(zod@4.1.5)':
     dependencies:
       '@ai-sdk/provider-utils': 3.0.8(zod@4.1.5)
-      ai: 5.0.37(zod@4.1.5)
+      ai: 5.0.39(zod@4.1.5)
       swrv: 1.1.0(vue@3.5.21(typescript@5.9.2))
     optionalDependencies:
       vue: 3.5.21(typescript@5.9.2)
@@ -6026,7 +6029,7 @@ snapshots:
 
   '@nuxt/ui@4.0.0-alpha.1(@babel/parser@7.28.4)(axios@1.11.0)(db0@0.3.2)(embla-carousel@8.6.0)(ioredis@5.7.0)(magicast@0.3.5)(typescript@5.9.2)(vite@7.1.5(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.5.1(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))(zod@4.1.5)':
     dependencies:
-      '@ai-sdk/vue': 2.0.37(vue@3.5.21(typescript@5.9.2))(zod@4.1.5)
+      '@ai-sdk/vue': 2.0.39(vue@3.5.21(typescript@5.9.2))(zod@4.1.5)
       '@iconify/vue': 5.0.0(vue@3.5.21(typescript@5.9.2))
       '@internationalized/date': 3.9.0
       '@internationalized/number': 3.6.5
@@ -6063,7 +6066,7 @@ snapshots:
       reka-ui: 2.5.0(typescript@5.9.2)(vue@3.5.21(typescript@5.9.2))
       scule: 1.3.0
       tailwind-merge: 3.3.1
-      tailwind-variants: 3.1.0(tailwind-merge@3.3.1)(tailwindcss@4.1.13)
+      tailwind-variants: 3.1.1(tailwind-merge@3.3.1)(tailwindcss@4.1.13)
       tailwindcss: 4.1.13
       tinyglobby: 0.2.15
       typescript: 5.9.2
@@ -7156,9 +7159,9 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  ai@5.0.37(zod@4.1.5):
+  ai@5.0.39(zod@4.1.5):
     dependencies:
-      '@ai-sdk/gateway': 1.0.19(zod@4.1.5)
+      '@ai-sdk/gateway': 1.0.20(zod@4.1.5)
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.8(zod@4.1.5)
       '@opentelemetry/api': 1.9.0
@@ -7355,7 +7358,7 @@ snapshots:
   browserslist@4.25.4:
     dependencies:
       caniuse-lite: 1.0.30001741
-      electron-to-chromium: 1.5.214
+      electron-to-chromium: 1.5.215
       node-releases: 2.0.20
       update-browserslist-db: 1.1.3(browserslist@4.25.4)
 
@@ -7376,7 +7379,7 @@ snapshots:
 
   bundle-name@4.1.0:
     dependencies:
-      run-applescript: 7.0.0
+      run-applescript: 7.1.0
 
   c12@3.2.0(magicast@0.3.5):
     dependencies:
@@ -7790,7 +7793,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  electron-to-chromium@1.5.214: {}
+  electron-to-chromium@1.5.215: {}
 
   embla-carousel-auto-height@8.6.0(embla-carousel@8.6.0):
     dependencies:
@@ -10149,7 +10152,7 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.50.1
       fsevents: 2.3.3
 
-  run-applescript@7.0.0: {}
+  run-applescript@7.1.0: {}
 
   run-parallel@1.2.0:
     dependencies:
@@ -10493,7 +10496,7 @@ snapshots:
 
   tailwind-merge@3.3.1: {}
 
-  tailwind-variants@3.1.0(tailwind-merge@3.3.1)(tailwindcss@4.1.13):
+  tailwind-variants@3.1.1(tailwind-merge@3.3.1)(tailwindcss@4.1.13):
     dependencies:
       tailwindcss: 4.1.13
     optionalDependencies:

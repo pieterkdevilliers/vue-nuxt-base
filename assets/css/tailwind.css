@@ -1,4 +1,4 @@
 /* assets/css/tailwind.css */
-@tailwind base;
-@tailwind components;
+@import 'tailwindcss/utilities';
+
 @tailwind utilities;

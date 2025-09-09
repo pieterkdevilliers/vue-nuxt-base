@@ -5,21 +5,21 @@
             <h1 class="text-xl font-bold">Login</h1>
         </template>
 
-        <UForm :state="state" @submit="handleLogin">
-            <UFormGroup label="Username" name="username" class="mb-4">
+        <UForm :schema="schema" :state="state" @submit="handleLogin">
+            <UFormField label="Email" name="username" class="mb-4">
                 <UInput
                     v-model="state.username"
                     placeholder="you@example.com"
                 />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup label="Password" name="password" class="mb-4">
+            <UFormField label="Password" name="password" class="mb-4">
                 <UInput
                     v-model="state.password"
                     type="password"
                     placeholder="••••••••"
                 />
-            </UFormGroup>
+            </UFormField>
 
             <UButton type="submit" block> Login </UButton>
         </UForm>
@@ -27,36 +27,67 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
-const state = ref({
-  username: '',
-  password: ''
+import * as z from 'zod'
+import type { FormSubmitEvent } from '@nuxt/ui'
+
+// Define Zod schema for the form
+const schema = z.object({
+    username: z.string().email('Invalid email address'), // Use .email() for email validation
+    password: z.string().min(6, 'Must be at least 6 characters'), // Example: minimum password length
+})
+
+// Infer the TypeScript type from the schema for better type safety
+type Schema = z.output<typeof schema>
+
+// const state = ref<Schema>({
+//     username: '',
+//     password: '',
+// })
+
+const state = reactive<Partial<Schema>>({
+    email: undefined,
+    password: undefined,
 })
 
 const router = useRouter()
+const toast = useToast()
 
-async function handleLogin() {
-  try {
-    const form = new URLSearchParams()
-    form.append('username', state.value.username)
-    form.append('password', state.value.password)
+async function handleLogin(event: FormSubmitEvent<Schema>) {
+    const formData = event.data
+    try {
+        const form = new URLSearchParams()
+        form.append('username', formData.username)
+        form.append('password', formData.password)
 
-    const response = await $fetch('/api/v1/auth/login', {
-      method: 'POST',
-      body: form,
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      baseURL: useRuntimeConfig().public.apiBase
-    })
+        const response = await $fetch('/api/v1/auth/login', {
+            method: 'POST',
+            body: form,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            baseURL: useRuntimeConfig().public.apiBase,
+        })
 
-    localStorage.setItem('token', response.access_token)
-    router.push('/')
-  } catch (error: any) {
-    console.error('Login failed:', error)
-    if (error.response?._data?.detail) {
-      alert(error.response._data.detail)
+        localStorage.setItem('token', response.access_token)
+        console.log('token set')
+        toast.add({
+            title: 'Success',
+            description: 'Login successful! Redirecting...',
+            color: 'success',
+        })
+        console.log('toast display')
+        console.log('timer 500ms')
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        console.log('timer 3000ms')
+        await new Promise((resolve) => setTimeout(resolve, 3000))
+        console.log('redirect start')
+        // router.push('/account')
+    } catch (error: any) {
+        console.error('Login failed:', error)
+        if (error.response?._data?.detail) {
+            alert(error.response._data.detail)
+        }
     }
-  }
 }
 </script>

@@ -1,16 +1,29 @@
-// tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 export default {
+    mode: 'jit',
     content: [
-        './components/**/*.{js,vue,ts}',
+        './components/**/*.{vue,js,ts}',
         './layouts/**/*.vue',
         './pages/**/*.vue',
-        './plugins/**/*.{js,ts}',
         './app.vue',
-        './error.vue',
+        './nuxt.config.{js,ts}',
     ],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                accent: '#DB2777',
+            },
+            fontFamily: {
+                sans: [
+                    'Roboto',
+                    ...require('tailwindcss/defaultTheme').fontFamily.sans,
+                ],
+                'roboto-condensed': [
+                    'Roboto Condensed',
+                    ...require('tailwindcss/defaultTheme').fontFamily.sans,
+                ],
+            },
+        },
     },
-    plugins: [],
+    // plugins: [require('@designbycode/tailwindcss-text-shadow')],
 }
