@@ -4,4 +4,9 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
     modules: ['@nuxtjs/tailwindcss', '@nuxt/ui', '@pinia/nuxt'],
     css: ['~/assets/css/tailwind.css'],
+    runtimeConfig: {
+    public: {
+      apiBase: 'http://localhost:8000'
+    }
+  }
 })

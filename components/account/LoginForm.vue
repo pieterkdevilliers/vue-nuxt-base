@@ -26,30 +26,37 @@
     </UCard>
 </template>
 
-<script setup>
-import { reactive } from 'vue'
-import axios from 'axios'
+<script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-// REMOVE THIS LINE - LET NU-XT AUTO-IMPORT THEM
-// import { UCard, UForm, UFormGroup, UInput, UButton } from '#components'
-
-const router = useRouter()
-const state = reactive({
-    username: '',
-    password: '',
+const state = ref({
+  username: '',
+  password: ''
 })
 
+const router = useRouter()
+
 async function handleLogin() {
-    try {
-        const response = await axios.post('http://localhost:8000/token', {
-            username: state.username,
-            password: state.password,
-        })
-        localStorage.setItem('token', response.data.access_token)
-        router.push('/account')
-    } catch (error) {
-        console.error('Login failed:', error)
+  try {
+    const form = new URLSearchParams()
+    form.append('username', state.value.username)
+    form.append('password', state.value.password)
+
+    const response = await $fetch('/api/v1/auth/login', {
+      method: 'POST',
+      body: form,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      baseURL: useRuntimeConfig().public.apiBase
+    })
+
+    localStorage.setItem('token', response.access_token)
+    router.push('/')
+  } catch (error: any) {
+    console.error('Login failed:', error)
+    if (error.response?._data?.detail) {
+      alert(error.response._data.detail)
     }
+  }
 }
 </script>
