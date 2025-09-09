@@ -1,6 +1,9 @@
+<!-- pages/account/index.vue -->
 <template>
-    <div>
-        <h1 class="text-blue-700 text-2xl">Home Page</h1>
-        <a href="/account">Account Page</a>
-    </div>
+    <h1 class="text-accent">Home Page</h1>
+    <ClientOnly>
+        <AccountLoginForm />
+    </ClientOnly>
 </template>
+
+<script setup lang="ts"></script>

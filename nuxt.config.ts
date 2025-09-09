@@ -1,12 +1,20 @@
 // nuxt.config.ts
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
     devtools: { enabled: true },
-    modules: ['@nuxtjs/tailwindcss', '@nuxt/ui', '@pinia/nuxt'],
-    css: ['~/assets/css/tailwind.css'],
+    modules: ['@pinia/nuxt', '@nuxt/ui', '@nuxtjs/color-mode'],
+    css: ['~/assets/css/main.css'],
+    build: {},
     runtimeConfig: {
-    public: {
-      apiBase: 'http://localhost:8000'
-    }
-  }
+        public: {
+            apiBase: 'http://localhost:8000',
+        },
+    },
+    vite: {
+        build: {
+            sourcemap: true,
+        },
+    },
 })
