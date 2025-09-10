@@ -35,20 +35,15 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 
 // Define Zod schema for the form
 const schema = z.object({
-    username: z.string().email('Invalid email address'), // Use .email() for email validation
+    username: z.email('Invalid email address'), // Use .email() for email validation
     password: z.string().min(6, 'Must be at least 6 characters'), // Example: minimum password length
 })
 
 // Infer the TypeScript type from the schema for better type safety
 type Schema = z.output<typeof schema>
 
-// const state = ref<Schema>({
-//     username: '',
-//     password: '',
-// })
-
 const state = reactive<Partial<Schema>>({
-    email: undefined,
+    username: undefined,
     password: undefined,
 })
 
@@ -70,23 +65,24 @@ async function handleLogin(event: FormSubmitEvent<Schema>) {
         })
 
         localStorage.setItem('token', response.access_token)
-        console.log('token set')
+        const toastDuration = 3000
         toast.add({
             title: 'Success',
             description: 'Login successful! Redirecting...',
             color: 'success',
+            duration: toastDuration,
         })
-        console.log('toast display')
-        console.log('timer 500ms')
-        await new Promise((resolve) => setTimeout(resolve, 500))
-        console.log('timer 3000ms')
-        await new Promise((resolve) => setTimeout(resolve, 3000))
-        console.log('redirect start')
-        // router.push('/account')
+        setTimeout(() => {
+            router.push('/account')
+        }, toastDuration)
     } catch (error: any) {
         console.error('Login failed:', error)
         if (error.response?._data?.detail) {
-            alert(error.response._data.detail)
+            toast.add({
+                title: 'Failed',
+                description: 'Please try again',
+                color: 'error',
+            })
         }
     }
 }
