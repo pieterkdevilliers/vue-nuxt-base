@@ -35,16 +35,22 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 
 // Define Zod schema for the form
 const schema = z.object({
-    username: z.email('Invalid email address'), // Use .email() for email validation
-    password: z.string().min(6, 'Must be at least 6 characters'), // Example: minimum password length
+    username: z
+        .string()
+        .nonempty('Email is required')
+        .email('Invalid email address'),
+    password: z
+        .string()
+        .nonempty('Password is required')
+        .min(6, 'Must be at least 6 characters'),
 })
 
 // Infer the TypeScript type from the schema for better type safety
 type Schema = z.output<typeof schema>
 
 const state = reactive<Partial<Schema>>({
-    username: undefined,
-    password: undefined,
+    username: '',
+    password: '',
 })
 
 const router = useRouter()
