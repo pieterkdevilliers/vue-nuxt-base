@@ -1,8 +1,7 @@
 <template>
-    <div>
-        <!-- Any common layout components like headers or footers can be added here -->
-        <main>
+    <UApp>
+        <div>
             <NuxtPage />
-        </main>
-    </div>
+        </div>
+    </UApp>
 </template>
