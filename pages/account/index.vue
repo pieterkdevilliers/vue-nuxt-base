@@ -15,6 +15,8 @@ const accountOrganisation = ref('')
 
 function handleLogout() {
     authStore.clearAuthToken()
+    authStore.clearUniqueAccountId()
+    authStore.clearAccountOrganisation()
     router.push('/')
 }
 </script>
