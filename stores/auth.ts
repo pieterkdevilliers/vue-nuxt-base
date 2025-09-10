@@ -6,7 +6,7 @@ import type { PersistedStateOptions } from 'pinia-plugin-persistedstate' // Impo
 interface AuthState {
     uniqueAccountId: string | null
     access_token: string | null
-    account_organisation: string | null
+    accountOrganisation: string | null
 }
 
 // Define a type for your getters
@@ -41,7 +41,7 @@ export const useAuthStore = defineStore('auth', {
     state: (): AuthState => ({
         uniqueAccountId: null,
         access_token: null,
-        account_organisation: null,
+        accountOrganisation: null,
     }),
     getters: {
         isLoggedIn(state) {
@@ -59,14 +59,13 @@ export const useAuthStore = defineStore('auth', {
             this.access_token = access_token
         },
         clearAuthToken() {
-            console.log('Clearing auth token')
             this.access_token = null
         },
-        setAccountOrganisation(account_organisation) {
-            this.account_organisation = account_organisation
+        setAccountOrganisation(accountOrganisation) {
+            this.accountOrganisation = accountOrganisation
         },
         clearAccountOrganisation() {
-            this.account_organisation = null
+            this.accountOrganisation = null
         },
     },
     persist: true, // This property is now correctly typed thanks to AuthStoreDefinitionOptions
