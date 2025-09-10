@@ -29,9 +29,19 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '~/stores/auth'
 
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+
+const authStore = useAuthStore()
+const apiAuthorizationToken = authStore.access_token
+const uniqueAccountId = authStore.uniqueAccountId
+const accountOrganisation = ref('')
+
+console.log('apiAuthorizationToken  from store:', apiAuthorizationToken)
+console.log('uniqueAccountId  from store:', uniqueAccountId)
+console.log('accountOrganisation  from ref:', accountOrganisation)
 
 // Define Zod schema for the form
 const schema = z.object({
@@ -70,7 +80,23 @@ async function handleLogin(event: FormSubmitEvent<Schema>) {
             baseURL: useRuntimeConfig().public.apiBase,
         })
 
-        localStorage.setItem('token', response.access_token)
+        // localStorage.setItem('token', response.access_token)
+        console.log('response', response)
+        authStore.setAuthToken(response.access_token)
+        authStore.setUniqueAccountId(response.unique_account_id)
+        authStore.setAccountOrganisation(response.account_organisation)
+        console.log(
+            'Token saved to localStorage and store:',
+            response.access_token
+        )
+        console.log(
+            'Unique Account ID saved to store:',
+            response.unique_account_id
+        )
+        console.log(
+            'Account Organisation saved to store:',
+            response.account_organisation
+        )
         const toastDuration = 3000
         toast.add({
             title: 'Success',
