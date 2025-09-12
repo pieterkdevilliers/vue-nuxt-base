@@ -6,20 +6,22 @@
         </template>
 
         <UForm :schema="schema" :state="state" @submit="handleLogin">
-            <UFormField label="Email" name="username" class="mb-4">
-                <UInput
-                    v-model="state.username"
-                    placeholder="you@example.com"
-                />
-            </UFormField>
+            <UFieldGroup class="gap-14">
+                <UFormField label="Email" name="username" class="mb-4">
+                    <UInput
+                        v-model="state.username"
+                        placeholder="you@example.com"
+                    />
+                </UFormField>
 
-            <UFormField label="Password" name="password" class="mb-4">
-                <UInput
-                    v-model="state.password"
-                    type="password"
-                    placeholder="••••••••"
-                />
-            </UFormField>
+                <UFormField label="Password" name="password" class="mb-4">
+                    <UInput
+                        v-model="state.password"
+                        type="password"
+                        placeholder="••••••••"
+                    />
+                </UFormField>
+            </UFieldGroup>
 
             <UButton type="submit" block> Login </UButton>
         </UForm>
