@@ -79,7 +79,8 @@ async function handleLogin(event: FormSubmitEvent<Schema>) {
         authStore.setAuthToken(response.access_token)
         authStore.setUniqueAccountId(response.account_unique_id)
         authStore.setAccountOrganisation(response.account_organisation)
-        const toastDuration = 3000
+        console.log('apiAuthorizationToken:', apiAuthorizationToken)
+        const toastDuration = 1500
         toast.add({
             title: 'Success',
             description: 'Login successful! Redirecting...',
@@ -87,7 +88,7 @@ async function handleLogin(event: FormSubmitEvent<Schema>) {
             duration: toastDuration,
         })
         setTimeout(() => {
-            router.push('/account')
+            router.push('/account_list')
         }, toastDuration)
     } catch (error: any) {
         console.error('Login failed:', error)
