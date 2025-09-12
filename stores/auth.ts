@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { DefineStoreOptions } from 'pinia' // Important for defineStore generics
-import type { PersistedStateOptions } from 'pinia-plugin-persistedstate' // Important for the 'persist' property
+import type { PersistenceOptions } from 'pinia-plugin-persistedstate' // Important for the 'persist' property
 
 // Define a type for your state
 interface AuthState {
@@ -33,7 +33,7 @@ type AuthStoreDefinitionOptions = DefineStoreOptions<
     AuthGetters,
     AuthActions
 > & {
-    persist?: boolean | PersistedStateOptions // Make 'persist' an optional property
+    persist?: boolean | PersistenceOptions // Make 'persist' an optional property
 }
 
 // Now use this combined type for the options object directly
