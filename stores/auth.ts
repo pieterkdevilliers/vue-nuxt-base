@@ -1,72 +1,110 @@
+// stores/auth.ts
 import { defineStore } from 'pinia'
-import type { DefineStoreOptions } from 'pinia' // Important for defineStore generics
-import type { PersistenceOptions } from 'pinia-plugin-persistedstate' // Important for the 'persist' property
 
-// Define a type for your state
+interface User {
+    id: string
+    email: string
+    full_name?: string
+    user_id?: string
+}
+
 interface AuthState {
-    uniqueAccountId: string | null
     access_token: string | null
+    uniqueAccountId: string | null
     accountOrganisation: string | null
+    userId: string | null
+    userEmail: string | null
+    selectedUser: User | null
 }
 
-// Define a type for your getters
-interface AuthGetters {
-    isLoggedIn(state: AuthState): boolean
-    [key: string]: any // Index signature for Pinia's internal getter type compatibility
-}
-
-// Define a type for your actions
-interface AuthActions {
-    setUniqueAccountId(id: string): void
-    clearUniqueAccountId(): void
-    setAuthToken(access_token: string): void
-    clearAuthToken(): void
-    setAccountOrganisation(account_organisation: string): void
-    clearAccountOrganisation(): void
-}
-
-// Define a type for the *options object* that you pass to defineStore
-// This combines Pinia's default options with the `persist` option from the plugin.
-type AuthStoreDefinitionOptions = DefineStoreOptions<
-    'auth',
-    AuthState,
-    AuthGetters,
-    AuthActions
-> & {
-    persist?: boolean | PersistenceOptions // Make 'persist' an optional property
-}
-
-// Now use this combined type for the options object directly
 export const useAuthStore = defineStore('auth', {
     state: (): AuthState => ({
-        uniqueAccountId: null,
         access_token: null,
+        uniqueAccountId: null,
         accountOrganisation: null,
+        userId: null,
+        userEmail: null,
+        selectedUser: null,
     }),
+
     getters: {
-        isLoggedIn(state) {
-            return !!state.access_token
+        isLoggedIn(): boolean {
+            return !!this.access_token
         },
     },
+
     actions: {
-        setUniqueAccountId(id) {
-            this.uniqueAccountId = id
+        // Existing methods (keep your current implementations)
+        setAuthToken(token: string) {
+            this.access_token = token
         },
-        clearUniqueAccountId() {
-            this.uniqueAccountId = null
-        },
-        setAuthToken(access_token) {
-            this.access_token = access_token
-        },
+
         clearAuthToken() {
             this.access_token = null
         },
-        setAccountOrganisation(accountOrganisation) {
-            this.accountOrganisation = accountOrganisation
+
+        setUniqueAccountId(id: string) {
+            this.uniqueAccountId = id
         },
+
+        clearUniqueAccountId() {
+            this.uniqueAccountId = null
+        },
+
+        setAccountOrganisation(org: string) {
+            this.accountOrganisation = org
+        },
+
         clearAccountOrganisation() {
             this.accountOrganisation = null
         },
+
+        // Missing methods that need to be added
+        setUserId(id: string) {
+            this.userId = id
+        },
+
+        clearUserId() {
+            this.userId = null
+        },
+
+        setUserEmail(email: string) {
+            this.userEmail = email
+        },
+
+        clearUserEmail() {
+            this.userEmail = null
+        },
+
+        // Optional: method to set complete user data
+        setSelectedUser(user: User) {
+            this.selectedUser = user
+            this.userId = user.id
+            this.userEmail = user.email
+        },
+
+        clearSelectedUser() {
+            this.selectedUser = null
+            this.userId = null
+            this.userEmail = null
+        },
+
+        // Clear all auth data
+        clearAll() {
+            this.access_token = null
+            this.uniqueAccountId = null
+            this.accountOrganisation = null
+            this.userId = null
+            this.userEmail = null
+            this.selectedUser = null
+        },
     },
-    persist: true, // This property is now correctly typed thanks to AuthStoreDefinitionOptions
-} as AuthStoreDefinitionOptions) // Cast the literal object to our defined options type
+
+    // Optional: Add persistence
+    persist: {
+        key: 'auth-store',
+        storage: persistedState.localStorage,
+        // Only persist essential auth data, not temporary user selections
+        pick: ['access_token', 'uniqueAccountId', 'accountOrganisation'],
+    },
+})

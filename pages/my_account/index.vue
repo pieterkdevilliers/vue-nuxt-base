@@ -1,7 +1,7 @@
 <template>
     <div class="flex justify-between">
         <div class="flex flex-col gap-4">
-            <h1 class="text-green-500 text-2xl">My Accounts</h1>
+            <h1 class="text-green-500 text-2xl">My Account</h1>
             <!-- <small>{{ isLoggedIn ? 'Logged In' : 'Logged Out' }}</small> -->
             <ClientOnly>
                 <UBreadcrumb
@@ -16,14 +16,20 @@
             :error="error"
         >
             <template #default>
-                <p>{{ accountOrganisation }}</p>
+                <h3>{{ accountOrganisation }}</h3>
                 <p>Account ID: {{ uniqueAccountId }}</p>
             </template>
         </UCard>
     </div>
-    <UCard>
-        <template #header>Account Users</template>
-    </UCard>
+    <UPageGrid>
+        <UPageCard
+            @click="$router.push('/user_list')"
+            class="mt-6 cursor-pointer"
+        >
+            <template #header>Account Users</template>
+            <p>Number of Users: {{ users.length }}</p>
+        </UPageCard>
+    </UPageGrid>
 </template>
 
 <script setup lang="ts">
@@ -45,6 +51,7 @@ const {
 // Define a ref to store the accounts data
 const loading = ref(true)
 const error = ref<string | null>(null)
+const users = ref<any[]>([])
 
 // Make breadcrumb items reactive
 const items = computed<BreadcrumbItem[]>(() => [
@@ -68,23 +75,18 @@ onMounted(async () => {
     }
 
     try {
-        const response = await $fetch(
-            `/api/v1/accounts/${uniqueAccountId.value}`,
-            {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${apiAuthorizationToken.value}`,
-                },
-                baseURL: useRuntimeConfig().public.apiBase,
-            }
-        )
-        console.log('API Response:', response)
+        const data = await $fetch(`/api/v1/users/${uniqueAccountId.value}`, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                Authorization: `Bearer ${apiAuthorizationToken.value}`,
+            },
+            baseURL: useRuntimeConfig().public.apiBase,
+        })
+        users.value = data
+        console.log('Fetched users:', users)
     } catch (e: any) {
-        console.error('Failed to fetch accounts:', e)
-        error.value = e.message || 'An unknown error occurred.'
-    } finally {
-        loading.value = false
+        console.error('Error during onMounted:', e)
     }
 })
 </script>
