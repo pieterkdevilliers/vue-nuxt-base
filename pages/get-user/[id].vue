@@ -32,49 +32,28 @@
     </div>
 
     <div v-else-if="user" class="mt-6">
-        <UCard :title="`User ID: ${route.params.id}`">
-            <template #default>
-                <div class="space-y-4">
-                    <div>
-                        <h3 class="text-xl font-semibold">
-                            {{ user.full_name }}
-                        </h3>
-                        <p class="text-gray-600">{{ user.email }}</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 text-sm">
+        <UPageGrid>
+            <UPageCard :title="`User ID: ${route.params.id}`">
+                <template #default>
+                    <div class="space-y-4">
                         <div>
-                            <span class="font-medium">User ID:</span>
-                            <span class="ml-2">{{ user.id }}</span>
+                            <h3 class="text-xl font-semibold">
+                                {{ user.full_name }}
+                            </h3>
+                            <p class="text-gray-600">{{ user.email }}</p>
                         </div>
-                        <div v-if="user.user_id">
-                            <span class="font-medium">Internal ID:</span>
-                            <span class="ml-2">{{ user.user_id }}</span>
+
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="font-medium">User ID:</span>
+                                <span class="ml-2">{{ user.id }}</span>
+                            </div>
+                            <div v-if="user.user_id">
+                                <span class="font-medium">Internal ID:</span>
+                                <span class="ml-2">{{ user.user_id }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </template>
-        </UCard>
-
-        <UPageGrid class="mt-6">
-            <UPageCard
-                @click="$router.push('/user_list')"
-                class="cursor-pointer hover:bg-gray-50"
-                title="Back to Users"
-                description="Return to the user list"
-            >
-                <template #icon>
-                    <UIcon name="i-lucide-arrow-left" class="w-6 h-6" />
-                </template>
-            </UPageCard>
-
-            <UPageCard
-                v-if="allUsers.length"
-                title="Account Users"
-                :description="`Total users in account: ${allUsers.length}`"
-            >
-                <template #icon>
-                    <UIcon name="i-lucide-users" class="w-6 h-6" />
                 </template>
             </UPageCard>
         </UPageGrid>
