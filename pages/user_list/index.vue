@@ -25,6 +25,19 @@
     </div>
 
     <div v-else-if="users.length">
+        <UModal
+            title="Add New User"
+            :close="{
+                color: 'neutral',
+                variant: 'ghost',
+            }"
+        >
+            <UButton label="Add New User" color="primary" variant="subtle" />
+
+            <template #body>
+                <UserCreateForm @submitted="handleAccountSubmitted" />
+            </template>
+        </UModal>
         <UPageGrid class="mt-6">
             <UPageCard
                 v-for="user in users"

@@ -34,6 +34,28 @@
     <div v-else-if="user" class="mt-6">
         <UPageGrid>
             <UPageCard :title="`User ID: ${route.params.id}`">
+                <template #header>
+                    <h2 class="text-lg font-semibold">User Information</h2>
+                    <UModal
+                        title="Edit User: {{ user.full_name }}"
+                        :close="{
+                            color: 'neutral',
+                            variant: 'ghost',
+                        }"
+                    >
+                        <UButton
+                            label="Edit User"
+                            color="primary"
+                            variant="subtle"
+                        />
+
+                        <template #body>
+                            <AccountCreateForm
+                                @submitted="handleAccountSubmitted"
+                            />
+                        </template>
+                    </UModal>
+                </template>
                 <template #default>
                     <div class="space-y-4">
                         <div>
