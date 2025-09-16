@@ -1,11 +1,24 @@
 <!-- pages/account/index.vue -->
 <template>
-    <h1 class="text-red-500 text-2xl">Account Page</h1>
+    <h1 class="font-semibold text-2xl">Account Page</h1>
     <div v-if="authStore.isLoggedIn">
         <UButton @click="handleLogout">Log Out</UButton>
     </div>
 
     <h2 class="text-xl font-semibold">Account List</h2>
+    <UModal
+        title="Create New Account"
+        :close="{
+            color: 'neutral',
+            variant: 'ghost',
+        }"
+    >
+        <UButton label="Add New Account" color="primary" variant="subtle" />
+
+        <template #body>
+            <AccountCreateForm @submitted="handleAccountSubmitted" />
+        </template>
+    </UModal>
     <div v-if="accounts.length">
         <UPageGrid>
             <UPageCard
@@ -34,6 +47,10 @@ import { useAuthStore } from '~/stores/auth'
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { card } from '#build/ui'
+import { useModalStore } from '~/stores/modal'
+import { useAccountStore } from '~/stores/account'
+import AccountCreateForm from '~/components/forms/AccountCreateForm.vue'
+// import AccountEditForm from '~/components/forms/AccountUpdateForm.vue'
 const authStore = useAuthStore()
 const router = useRouter()
 const apiAuthorizationToken = authStore.access_token
@@ -46,6 +63,18 @@ const isLoggedIn = authStore.isLoggedIn
 const accounts = ref<any[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
+
+const modalStore = useModalStore()
+const accountStore = useAccountStore()
+
+function handleAccountSubmitted(account: any) {
+    console.log('Account submitted successfully:', account)
+    // Re-fetch data, show a toast notification, etc.
+}
+
+definePageMeta({
+    layout: 'logged-in',
+})
 
 onMounted(async () => {
     console.log('Mounted accounts component')

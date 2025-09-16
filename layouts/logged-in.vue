@@ -1,3 +1,4 @@
+// layouts/logged-in.vue
 <template>
     <UApp :toaster="toaster">
         <div>
@@ -8,5 +9,4 @@
 
 <script setup lang="ts">
 const toaster = { position: 'top-right' }
-console.log('Layout: default.vue')
 </script>
