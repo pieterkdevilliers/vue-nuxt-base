@@ -62,8 +62,6 @@ const isLoggedIn = authStore.isLoggedIn
 const accounts = ref<any[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
-
-const modalStore = useModalStore()
 const accountStore = useAccountStore()
 
 function handleAccountSubmitted(account: any) {
