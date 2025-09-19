@@ -1,18 +1,35 @@
 // stores/account.ts
 import { defineStore } from 'pinia'
+import { useAuthStore } from '~/stores/auth'
 import { ref } from 'vue'
 
 interface Account {
-    id: number
-    name: string
-    email: string
-    // ... other account properties
+    // These fields should match what FastAPI returns after creation,
+    // which might include more than just account_organisation.
+    // Example: ID, unique ID, etc.
+    id: string // Assuming FastAPI returns an ID for the account
+    account_organisation: string
+    account_unique_id?: string // If FastAPI generates this
+    // Add other fields from your actual AccountInDB model if any
 }
 
-interface AccountPayload {
-    name: string
+// Interface for the 'account' part of the payload
+interface AccountCreatePayload {
+    account_organisation: string
+}
+
+// Interface for the 'user' part of the payload
+interface UserCreatePayload {
     email: string
-    password?: string // Password might only be needed for create, not edit
+    password: string
+    full_name: string
+    account_ids: string[] // FastApi expects a list of strings (UUIDs)
+}
+
+// The combined interface that matches FastAPI's expected request body
+interface CombinedAccountUserCreatePayload {
+    account: AccountCreatePayload
+    user: UserCreatePayload
 }
 
 export const useAccountStore = defineStore('account', () => {
@@ -20,59 +37,131 @@ export const useAccountStore = defineStore('account', () => {
     const isLoading = ref(false)
     const error = ref<string | null>(null)
 
+    const getAuthorizationToken = () => {
+        const authStore = useAuthStore()
+        return authStore.access_token
+    }
+
     async function fetchAccounts() {
         isLoading.value = true
         error.value = null
         try {
-            // Simulate API call to fetch accounts
-            await new Promise((resolve) => setTimeout(resolve, 500))
-            accounts.value = [
-                { id: 1, name: 'John Doe', email: 'john@example.com' },
-                { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
-            ]
+            const apiAuthorizationToken = getAuthorizationToken()
+            if (!apiAuthorizationToken) {
+                throw new Error(
+                    'Authorization token is missing. Please log in.'
+                )
+            }
+
+            const data = await $fetch<Account[]>(`/api/v1/accounts/`, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${apiAuthorizationToken}`,
+                },
+                baseURL: useRuntimeConfig().public.apiBase,
+            })
+            accounts.value = data
         } catch (err: any) {
+            console.error('Failed to fetch accounts:', err)
             error.value = err.message || 'Failed to fetch accounts.'
-            throw err // Re-throw to allow component to catch
+            throw err
         } finally {
             isLoading.value = false
         }
     }
 
-    async function createAccount(payload: AccountPayload) {
+    // This function now accepts the combined payload
+    async function createAccount(
+        combinedPayload: CombinedAccountUserCreatePayload
+    ) {
         isLoading.value = true
         error.value = null
         try {
-            // Simulate API call to create an account
-            await new Promise((resolve) => setTimeout(resolve, 1000))
-            const newAccount: Account = {
-                id: Date.now(), // Generate a mock ID
-                name: payload.name,
-                email: payload.email,
+            // Basic client-side validation
+            if (
+                !combinedPayload.account.account_organisation ||
+                !combinedPayload.user.email ||
+                !combinedPayload.user.password ||
+                !combinedPayload.user.full_name
+            ) {
+                throw new Error('All account and user fields are required.')
             }
-            accounts.value.push(newAccount) // Add to local state
-            console.log('Account created in store:', newAccount)
-            return newAccount
+
+            const apiAuthorizationToken = getAuthorizationToken()
+            if (!apiAuthorizationToken) {
+                throw new Error(
+                    'Authorization token is missing. Please log in.'
+                )
+            }
+
+            const newAccountResponse = await $fetch<Account>( // Expecting an Account back
+                `/api/v1/accounts/`,
+                {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${apiAuthorizationToken}`,
+                    },
+                    baseURL: useRuntimeConfig().public.apiBase,
+                    body: JSON.stringify(combinedPayload), // Send the combined payload
+                }
+            )
+
+            accounts.value.push(newAccountResponse)
+            console.log(
+                'Account created on backend and added to store:',
+                newAccountResponse
+            )
+            return newAccountResponse
         } catch (err: any) {
+            console.error('Error creating account:', err)
             error.value = err.message || 'Failed to create account.'
-            throw err // Re-throw to allow component to catch
+            throw err
         } finally {
             isLoading.value = false
         }
     }
 
-    // Add more actions like updateAccount, deleteAccount, etc. as needed
-    async function updateAccount(id: number, payload: Partial<AccountPayload>) {
+    async function updateAccount(
+        id: string,
+        payload: Partial<CombinedAccountUserCreatePayload>
+    ) {
+        // Updated payload type
         isLoading.value = true
         error.value = null
         try {
-            // Simulate API call to update an account
-            await new Promise((resolve) => setTimeout(resolve, 1000))
-            const index = accounts.value.findIndex((acc) => acc.id === id)
-            if (index !== -1) {
-                accounts.value[index] = { ...accounts.value[index], ...payload }
+            const apiAuthorizationToken = getAuthorizationToken()
+            if (!apiAuthorizationToken) {
+                throw new Error(
+                    'Authorization token is missing. Please log in.'
+                )
             }
-            console.log('Account updated in store:', accounts.value[index])
+
+            const updatedAccountResponse = await $fetch<Account>(
+                `${useRuntimeConfig().public.apiBase}/api/v1/accounts/${id}`,
+                {
+                    method: 'PUT',
+                    body: JSON.stringify(payload), // Make sure payload matches partial structure
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${apiAuthorizationToken}`,
+                    },
+                }
+            )
+
+            const index = accounts.value.findIndex((acc) => acc.id === id)
+            if (index !== -1 && updatedAccountResponse) {
+                accounts.value[index] = updatedAccountResponse
+            }
+            console.log(
+                'Account updated on backend and in store:',
+                accounts.value[index]
+            )
+            return updatedAccountResponse
         } catch (err: any) {
+            console.error('Error updating account:', err)
             error.value = err.message || 'Failed to update account.'
             throw err
         } finally {
