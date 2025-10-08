@@ -1,5 +1,7 @@
 // stores/auth.ts
 import { defineStore } from 'pinia'
+// The useCookie composable is globally available in Nuxt 3.
+// You don't need to import `createNuxtPersistedState` here directly for this approach.
 
 interface User {
     id: string
@@ -29,12 +31,12 @@ export const useAuthStore = defineStore('auth', {
 
     getters: {
         isLoggedIn(): boolean {
+            // Ensure this getter is always safe, it simply checks the token existence.
             return !!this.access_token
         },
     },
 
     actions: {
-        // Existing methods (keep your current implementations)
         setAuthToken(token: string) {
             this.access_token = token
         },
@@ -59,7 +61,6 @@ export const useAuthStore = defineStore('auth', {
             this.accountOrganisation = null
         },
 
-        // Missing methods that need to be added
         setUserId(id: string) {
             this.userId = id
         },
@@ -76,7 +77,6 @@ export const useAuthStore = defineStore('auth', {
             this.userEmail = null
         },
 
-        // Optional: method to set complete user data
         setSelectedUser(user: User) {
             this.selectedUser = user
             this.userId = user.id
@@ -89,7 +89,7 @@ export const useAuthStore = defineStore('auth', {
             this.userEmail = null
         },
 
-        // Clear all auth data
+        // New action to clear ALL auth-related state and persisted items
         clearAll() {
             this.access_token = null
             this.uniqueAccountId = null
@@ -97,14 +97,34 @@ export const useAuthStore = defineStore('auth', {
             this.userId = null
             this.userEmail = null
             this.selectedUser = null
+            // IMPORTANT: If you want to explicitly clear cookies/localStorage for persisted state
+            // during logout, you might need to use the `paths` option or a specific action
+            // provided by the persisted state plugin. For now, setting to null
+            // will trigger the persistence to save null, effectively clearing it.
         },
     },
 
-    // Optional: Add persistence
+    // This is the most robust way to configure persistence for Nuxt 3 with SSR.
+    // It explicitly uses Nuxt's `useCookie` composable, which is SSR-safe.
     persist: {
-        key: 'auth-store',
-        storage: persistedState.localStorage,
-        // Only persist essential auth data, not temporary user selections
-        pick: ['access_token', 'uniqueAccountId', 'accountOrganisation'],
+        key: 'auth-store', // The name of the cookie/local storage item
+        storage: {
+            getItem: (key) => {
+                // Ensure useCookie is called where it's safe (during execution)
+                // Default maxAge of 0 means session cookie, you might want to set a longer one.
+                const cookie = useCookie(key, { maxAge: 60 * 60 * 24 * 30 }) // Example: 30 days
+                return cookie.value || null
+            },
+            setItem: (key, value) => {
+                const cookie = useCookie(key, { maxAge: 60 * 60 * 24 * 30 }) // Example: 30 days
+                cookie.value = value
+            },
+            removeItem: (key) => {
+                const cookie = useCookie(key)
+                cookie.value = null // Setting to null removes the cookie
+            },
+        },
+        // Specify exactly which state properties to persist
+        paths: ['access_token', 'uniqueAccountId', 'accountOrganisation'],
     },
 })

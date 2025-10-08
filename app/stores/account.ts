@@ -169,6 +169,46 @@ export const useAccountStore = defineStore('account', () => {
         }
     }
 
+    async function deleteAccount(
+        id: string,
+        payload: { account_unique_id: string }
+    ) {
+        isLoading.value = true
+        error.value = null
+        try {
+            const apiAuthorizationToken = getAuthorizationToken()
+            if (!apiAuthorizationToken) {
+                throw new Error(
+                    'Authorization token is missing. Please log in.'
+                )
+            }
+
+            await $fetch<void>(
+                `${useRuntimeConfig().public.apiBase}/api/v1/accounts/${id}`,
+                {
+                    method: 'DELETE',
+                    body: JSON.stringify(payload), // Sending the payload if needed
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${apiAuthorizationToken}`,
+                    },
+                }
+            )
+
+            accounts.value = accounts.value.filter((acc) => acc.id !== id)
+            console.log(
+                'Account deleted on backend and removed from store:',
+                id
+            )
+        } catch (err: any) {
+            console.error('Error deleting account:', err)
+            error.value = err.message || 'Failed to delete account.'
+            throw err
+        } finally {
+            isLoading.value = false
+        }
+    }
+
     return {
         accounts,
         isLoading,
@@ -176,5 +216,6 @@ export const useAccountStore = defineStore('account', () => {
         fetchAccounts,
         createAccount,
         updateAccount,
+        deleteAccount,
     }
 })

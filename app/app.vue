@@ -1,12 +1,10 @@
-// layouts/logged-in.vue
 <template>
     <UApp :toaster="toaster">
-        <div>
+        <NuxtLayout>
             <NuxtPage />
-        </div>
+        </NuxtLayout>
     </UApp>
 </template>
-
 <script setup lang="ts">
-const toaster = { position: 'top-right' }
+const toaster = { position: 'top-right' } as const
 </script>
