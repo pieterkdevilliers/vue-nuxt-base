@@ -72,6 +72,7 @@ import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '~/stores/auth'
 import { useRouter } from 'vue-router'
+import { userCreateForm } from '~/components/forms/UserCreateForm.vue'
 
 interface User {
     id: string
