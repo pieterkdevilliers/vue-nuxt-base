@@ -1,26 +1,26 @@
 <template>
-    <div class="flex justify-between">
-        <div class="flex flex-col gap-4">
-            <h1 class="text-green-500 text-2xl">My Account</h1>
-            <!-- <small>{{ isLoggedIn ? 'Logged In' : 'Logged Out' }}</small> -->
+    <UPageHeader class="mb-6 flex justify-between items-center upage-header">
+        <template #title>
+            <h1>My Account</h1>
             <ClientOnly>
                 <UBreadcrumb
                     separator-icon="i-lucide-arrow-right"
                     :items="items"
+                    class="mt-3"
                 />
             </ClientOnly>
-        </div>
-        <UCard
-            :title="`Account: ${accountOrganisation}`"
-            :loading="loading"
-            :error="error"
-        >
-            <template #default>
-                <h3>{{ accountOrganisation }}</h3>
-                <p>Account ID: {{ uniqueAccountId }}</p>
-            </template>
-        </UCard>
-    </div>
+        </template>
+        <template #links>
+            <UPageCard
+                :title="`Account: ${accountOrganisation}`"
+                :description="`Account ID: ${uniqueAccountId}`"
+                :loading="loading"
+                :error="error"
+                class="border-none shadow-none bg-transparent p-0 m-0"
+            >
+            </UPageCard>
+        </template>
+    </UPageHeader>
     <UPageGrid>
         <UPageCard
             @click="$router.push('/user_list')"
