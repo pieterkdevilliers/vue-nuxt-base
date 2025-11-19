@@ -1,6 +1,6 @@
 <template>
     <UApp :toaster="toaster">
-        <NuxtLayout>
+        <NuxtLayout class="px-6">
             <NuxtPage />
         </NuxtLayout>
     </UApp>

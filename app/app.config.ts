@@ -1,3 +1,5 @@
+import { pageHeader } from '#build/ui'
+
 export default defineAppConfig({
     ui: {
         modal: {
@@ -31,6 +33,17 @@ export default defineAppConfig({
                             'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] max-w-lg max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-4rem)] rounded-lg shadow-lg ring ring-default overflow-hidden',
                     },
                 },
+            },
+        },
+        pageHeader: {
+            slots: {
+                root: 'pageHeader__root',
+                container: 'pageHeader__container w-full',
+                wrapper: 'pageHeader__wrapper',
+                headline: 'pageHeader__headline',
+                title: 'pageHeader__title',
+                description: 'pageHeader__description',
+                links: 'pageHeader__links',
             },
         },
     },

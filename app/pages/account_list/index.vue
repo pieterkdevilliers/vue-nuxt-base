@@ -1,8 +1,14 @@
 <template>
-    <h1 class="font-semibold text-2xl">Account Page</h1>
-    <div v-if="authStore.isLoggedIn">
-        <UButton @click="handleLogout">Log Out</UButton>
-    </div>
+    <UPageHeader
+        title="Accounts"
+        class="mb-6 flex justify-between items-center upage-header"
+    >
+        <template #links>
+            <UButton v-if="authStore.isLoggedIn" @click="handleLogout"
+                >Log Out</UButton
+            >
+        </template>
+    </UPageHeader>
 
     <h2 class="text-xl font-semibold">Account List</h2>
 
@@ -24,6 +30,9 @@
                 :title="account.account_organisation"
                 @click="handleSelectAccount(account)"
                 class="cursor-pointer"
+                :ui="{
+                    footer: 'flex justify-end items-center w-full border-t border-slate-200 py-2 mt-6 pb-0',
+                }"
             >
                 <template #description>
                     <p>ID: {{ account.id }}</p>
@@ -31,16 +40,16 @@
                 </template>
                 <template #footer>
                     <UButton
-                        label="Update Account"
-                        color="primary"
-                        variant="outline"
+                        color="secondary"
+                        variant="ghost"
                         @click.stop="openUpdateAccountModal(account)"
+                        icon="i-lucide-edit"
                     />
                     <UButton
-                        label="Delete Account"
-                        color="danger"
-                        variant="outline"
+                        color="error"
+                        variant="ghost"
                         @click.stop="openDeleteAccountModal(account)"
+                        icon="i-lucide-trash"
                     />
                 </template>
             </UPageCard>
