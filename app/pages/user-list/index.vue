@@ -1,19 +1,21 @@
 <!-- pages/user-list/index.vue -->
 <template>
-    <div class="flex justify-between">
-        <div class="flex flex-col gap-4">
-            <h1 class="text-red-500 text-2xl">Users</h1>
+    <UPageHeader class="mb-6 flex justify-between items-center upage-header">
+        <template #title>
+            <h1>Users</h1>
             <ClientOnly>
                 <UBreadcrumb
                     separator-icon="i-lucide-arrow-right"
                     :items="items"
                 />
             </ClientOnly>
-        </div>
-        <div v-if="authStore.isLoggedIn">
-            <UButton @click="handleLogout">Log Out</UButton>
-        </div>
-    </div>
+        </template>
+        <template #links>
+            <div v-if="authStore.isLoggedIn">
+                <UButton @click="handleLogout">Log Out</UButton>
+            </div>
+        </template>
+    </UPageHeader>
 
     <div v-if="error" class="mt-6">
         <UAlert
