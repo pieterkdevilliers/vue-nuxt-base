@@ -15,21 +15,6 @@
             <UInput v-model="formData.account.account_organisation" />
         </UFormField>
 
-        <h3 class="py-4">User Details</h3>
-
-        <!-- User Details Fields -->
-        <div class="form-field-group flex gap-4">
-            <UFormField label="Full Name" name="user.full_name" required>
-                <UInput v-model="formData.user.full_name" />
-            </UFormField>
-            <UFormField label="Email" name="user.email" required>
-                <UInput type="email" v-model="formData.user.email" />
-            </UFormField>
-            <UFormField label="Password" name="user.password" required>
-                <UInput type="password" v-model="formData.user.password" />
-            </UFormField>
-        </div>
-
         <div class="flex justify-end space-x-2">
             <!-- Emit 'close' when cancel is clicked -->
             <UButton color="gray" variant="ghost" @click="emit('close')"
@@ -45,6 +30,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAccountStore } from '~/stores/account'
+import { useAuthStore } from '~/stores/auth'
+const authStore = useAuthStore()
+const userEmail = authStore.userEmail || ''
+console.log('Pre-filling email with:', userEmail)
 
 const accountStore = useAccountStore()
 const isLoading = ref(false)
@@ -54,7 +43,7 @@ const formData = ref({
         account_organisation: '',
     },
     user: {
-        email: '',
+        email: userEmail,
         password: '',
         full_name: '',
         account_ids: [],
