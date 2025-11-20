@@ -1,4 +1,4 @@
-<!-- pages/user_list/index.vue -->
+<!-- pages/user-list/index.vue -->
 <template>
     <div class="flex justify-between">
         <div class="flex flex-col gap-4">
@@ -103,12 +103,12 @@ const items = computed<BreadcrumbItem[]>(() => [
     {
         label: 'My Accounts',
         icon: 'i-lucide-list',
-        to: '/account_list',
+        to: '/account-list',
     },
     {
         label: accountOrganisation.value || 'Loading...',
         icon: 'i-lucide-building',
-        to: '/my_account',
+        to: '/my-account',
     },
     {
         label: 'Users',
