@@ -130,17 +130,17 @@ const items = computed<BreadcrumbItem[]>(() => [
     {
         label: 'My Accounts',
         icon: 'i-lucide-list',
-        to: '/account_list',
+        to: '/account-list',
     },
     {
         label: accountOrganisation.value || 'Loading...',
         icon: 'i-lucide-building',
-        to: '/my_account',
+        to: '/my-account',
     },
     {
         label: 'Users',
         icon: 'i-lucide-users',
-        to: '/user_list',
+        to: '/user-list',
     },
     {
         label: user.value?.full_name || `User ${userId.value}`,

@@ -23,7 +23,7 @@
     </UPageHeader>
     <UPageGrid>
         <UPageCard
-            @click="$router.push('/user_list')"
+            @click="$router.push('/user-list')"
             class="mt-6 cursor-pointer"
         >
             <template #header>Account Users</template>
@@ -59,7 +59,7 @@ const items = computed<BreadcrumbItem[]>(() => [
     {
         label: 'My Accounts',
         icon: 'i-lucide-list',
-        to: '/account_list',
+        to: '/account-list',
     },
     {
         label: accountOrganisation.value || 'Loading...',

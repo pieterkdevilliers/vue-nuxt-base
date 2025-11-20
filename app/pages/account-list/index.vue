@@ -202,6 +202,6 @@ function handleLogout() {
 function handleSelectAccount(account: any) {
     authStore.setUniqueAccountId(account.account_unique_id)
     authStore.setAccountOrganisation(account.account_organisation)
-    router.push('/my_account')
+    router.push('/my-account')
 }
 </script>
