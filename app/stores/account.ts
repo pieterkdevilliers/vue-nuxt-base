@@ -209,6 +209,51 @@ export const useAccountStore = defineStore('account', () => {
         }
     }
 
+        // This function now accepts the combined payload
+    async function createFirstAccount(
+        combinedPayload: CombinedAccountUserCreatePayload
+    ) {
+        isLoading.value = true
+        error.value = null
+        try {
+            // Basic client-side validation
+            if (
+                !combinedPayload.account.account_organisation ||
+                !combinedPayload.user.email ||
+                !combinedPayload.user.password ||
+                !combinedPayload.user.full_name
+            ) {
+                throw new Error('All account and user fields are required.')
+            }
+
+            const newAccountResponse = await $fetch<Account>( // Expecting an Account back
+                `/api/v1/accounts/`,
+                {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    baseURL: useRuntimeConfig().public.apiBase,
+                    body: JSON.stringify(combinedPayload), // Send the combined payload
+                }
+            )
+
+            accounts.value.push(newAccountResponse)
+            console.log(
+                'Account created on backend and added to store:',
+                newAccountResponse
+            )
+            return newAccountResponse
+        } catch (err: any) {
+            console.error('Error creating account:', err)
+            error.value = err.message || 'Failed to create account.'
+            throw err
+        } finally {
+            isLoading.value = false
+        }
+    }
+
     return {
         accounts,
         isLoading,
@@ -217,5 +262,6 @@ export const useAccountStore = defineStore('account', () => {
         createAccount,
         updateAccount,
         deleteAccount,
+        createFirstAccount,
     }
 })
