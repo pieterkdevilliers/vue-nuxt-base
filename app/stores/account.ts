@@ -81,9 +81,9 @@ export const useAccountStore = defineStore('account', () => {
             // Basic client-side validation
             if (
                 !combinedPayload.account.account_organisation ||
-                !combinedPayload.user.email ||
-                !combinedPayload.user.password ||
-                !combinedPayload.user.full_name
+                !combinedPayload.user.email
+                // !combinedPayload.user.password ||
+                // !combinedPayload.user.full_name
             ) {
                 throw new Error('All account and user fields are required.')
             }

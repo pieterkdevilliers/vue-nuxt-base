@@ -8,10 +8,10 @@
     <UForm :schema="schema" :state="state" @submit="handleLogin">
       <!-- your existing fields -->
       <UFormGroup class="space-y-4">
-        <UFormField label="Email" name="username">
+        <UFormField label="Email" name="username" required>
           <UInput v-model="state.username" placeholder="you@example.com" />
         </UFormField>
-        <UFormField label="Password" name="password">
+        <UFormField label="Password" name="password" required>
           <UInput v-model="state.password" type="password" placeholder="••••••••" />
         </UFormField>
       </UFormGroup>
@@ -87,6 +87,7 @@ async function handleLogin(event: FormSubmitEvent<Schema>) {
         authStore.setAuthToken(response.access_token)
         authStore.setUniqueAccountId(response.account_unique_id)
         authStore.setAccountOrganisation(response.account_organisation)
+        authStore.setUserEmail(formData.username)
         console.log('apiAuthorizationToken:', apiAuthorizationToken)
         const toastDuration = 1500
         toast.add({
