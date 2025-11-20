@@ -1,31 +1,36 @@
 <!-- components/account/LoginForm.vue -->
 <template>
-    <UCard class="max-w-md mx-auto mt-10">
-        <template #header>
-            <h1 class="text-xl font-bold">Login</h1>
-        </template>
+  <UCard class="max-w-md mx-auto">
+    <template #header>
+      <h1 class="text-xl font-bold">Login</h1>
+    </template>
 
-        <UForm :schema="schema" :state="state" @submit="handleLogin">
-            <UFieldGroup class="gap-14">
-                <UFormField label="Email" name="username" class="mb-4">
-                    <UInput
-                        v-model="state.username"
-                        placeholder="you@example.com"
-                    />
-                </UFormField>
+    <UForm :schema="schema" :state="state" @submit="handleLogin">
+      <!-- your existing fields -->
+      <UFormGroup class="space-y-4">
+        <UFormField label="Email" name="username">
+          <UInput v-model="state.username" placeholder="you@example.com" />
+        </UFormField>
+        <UFormField label="Password" name="password">
+          <UInput v-model="state.password" type="password" placeholder="••••••••" />
+        </UFormField>
+      </UFormGroup>
 
-                <UFormField label="Password" name="password" class="mb-4">
-                    <UInput
-                        v-model="state.password"
-                        type="password"
-                        placeholder="••••••••"
-                    />
-                </UFormField>
-            </UFieldGroup>
+      <UButton type="submit" block class="mt-6">Login</UButton>
+    </UForm>
 
-            <UButton type="submit" block> Login </UButton>
-        </UForm>
-    </UCard>
+    <!-- Clickable link that emits event to parent -->
+    <p class="mt-6 text-center text-sm text-gray-600">
+      Don't have an account?
+      <button
+        type="button"
+        class="font-medium text-primary-600 hover:text-primary-500 focus:outline-none"
+        @click="$emit('register')"
+      >
+        Create one here
+      </button>
+    </p>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -62,6 +67,7 @@ const state = reactive<Partial<Schema>>({
 
 const router = useRouter()
 const toast = useToast()
+defineEmits(['register'])
 
 async function handleLogin(event: FormSubmitEvent<Schema>) {
     const formData = event.data
