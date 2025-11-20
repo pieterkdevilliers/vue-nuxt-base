@@ -19,14 +19,17 @@
       <UButton type="submit" block class="mt-6">Login</UButton>
     </UForm>
 
+    <div class="mt-4 text-center">
+        <UButton
+            to="/forgot-password"
+            variant="link"
+            color="gray"
+            class="p-0 h-auto font-normal text-sm text-red-600 hover:text-red-500"
+            >
+            Forgot Password?
+        </UButton>
 
-      <button
-        type="button"
-        class="font-small text-red-300 hover:text-red-500 focus:outline-none"
-        @click="$emit('register')"
-      >
-        Forgot Password
-      </button>
+    </div>
 
     <p class="mt-6 text-center text-sm text-gray-600">
       Don't have an account?
