@@ -32,6 +32,7 @@ interface UserCreatePayload {
 interface UserUpdatePayload {
     email?: string
     full_name?: string
+    account_ids: number[]
 }
 
 interface UserToAccountPayload {

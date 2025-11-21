@@ -38,7 +38,7 @@
             <UPageCard
                 v-for="user in users"
                 :key="user.id"
-                :title="user.full_name"
+                :title="user.full_name || user.email"
                 @click="handleSelectUser(user)"
                 class="cursor-pointer"
                 :ui="{
@@ -53,20 +53,20 @@
                     <UButton
                         color="secondary"
                         variant="ghost"
-                        @click.stop="openUpdateAccountModal(account)"
+                        @click.stop="openUpdateUserModal(user)"
                         icon="i-lucide-edit"
                     />
                     <UButton
                         color="error"
                         variant="ghost"
-                        @click.stop="openDeleteAccountModal(account)"
+                        @click.stop="openDeleteUserModal(user)"
                         icon="i-lucide-trash"
                     />
                 </template>
             </UPageCard>
         </UPageGrid>
     </div>
-    <div v-else-if="loading">
+    <div v-else-if="isLoading">
         <div class="flex justify-center items-center mt-12">
             <UIcon name="i-lucide-loader-2" class="animate-spin w-6 h-6" />
             <span class="ml-2">Loading users...</span>
@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, markRaw } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '~/stores/auth'
 import { useRouter } from 'vue-router'
@@ -113,7 +113,7 @@ const userModal = overlay.create(GlobalModal)
 // Reactive refs from store
 const { accountOrganisation, isLoggedIn, access_token, uniqueAccountId } =
     storeToRefs(authStore)
-const { users, loading, error } = storeToRefs(userStore)
+const { users, isLoading, error } = storeToRefs(userStore)
 
 const items = computed<BreadcrumbItem[]>(() => [
     {
@@ -135,7 +135,7 @@ const items = computed<BreadcrumbItem[]>(() => [
 const fetchUsers = async () => {
     if (!uniqueAccountId.value) {
         error.value = 'No account selected'
-        loading.value = false
+        isLoading.value = false
         return
     }
 
@@ -170,7 +170,7 @@ function handleSelectUser(user: User) {
 
 // Optional: Add a refresh method
 const refreshUsers = () => {
-    loading.value = true
+    isLoading.value = true
     error.value = null
     users.value = []
     fetchUsers()
@@ -214,6 +214,29 @@ function openCreateUserModal() {
                 icon: 'i-heroicons-check-circle',
             })
 
+            userModal.close()
+        },
+    })
+}
+function openUpdateUserModal(user: User) {
+    if (!authStore.isLoggedIn) {
+        alert('You must be logged in to update a user.')
+        return
+    }
+    userModal.open({
+        title: user.full_name
+            ? `Update User: ${user.full_name}`
+            : 'Update User',
+        // component: markRaw(UserUpdateForm),
+        componentProps: {
+            userToUpdate: user,
+        },
+        onSubmitted: async (updatedUser) => {
+            console.log('User updated successfully:', updatedUser)
+            await fetchUsers() // wrapper uses uniqueAccountId
+            userModal.close()
+        },
+        onModalClose: () => {
             userModal.close()
         },
     })
