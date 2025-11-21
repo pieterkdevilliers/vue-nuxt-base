@@ -18,6 +18,7 @@
     </UPageHeader>
     <UButton
         label="Add New User"
+        icon="i-lucide-plus"
         color="primary"
         variant="subtle"
         @click="openCreateUserModal"
@@ -88,6 +89,8 @@ import { useAuthStore } from '~/stores/auth'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '~/stores/user'
 import UserCreateForm from '~/components/forms/UserCreateForm.vue'
+import UserUpdateForm from '~/components/forms/UserUpdateForm.vue'
+import type { UserBasic } from '~/types/user'
 import GlobalModal from '~/components/GlobalModal.vue'
 
 interface User {
@@ -218,16 +221,14 @@ function openCreateUserModal() {
         },
     })
 }
-function openUpdateUserModal(user: User) {
+function openUpdateUserModal(user: UserBasic) {
     if (!authStore.isLoggedIn) {
         alert('You must be logged in to update a user.')
         return
     }
     userModal.open({
-        title: user.full_name
-            ? `Update User: ${user.full_name}`
-            : 'Update User',
-        // component: markRaw(UserUpdateForm),
+        title: user.full_name ? `Edit User: ${user.full_name}` : 'Edit User',
+        component: markRaw(UserUpdateForm),
         componentProps: {
             userToUpdate: user,
         },
