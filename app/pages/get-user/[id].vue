@@ -49,11 +49,6 @@
                             variant="subtle"
                         />
 
-                        <template #body>
-                            <AccountCreateForm
-                                @submitted="handleAccountSubmitted"
-                            />
-                        </template>
                     </UModal>
                 </template>
                 <template #default>
@@ -94,6 +89,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '~/stores/auth'
+import { useUserStore } from '~/stores/user'
 import { useRoute, useRouter } from 'vue-router'
 
 interface User {
@@ -110,21 +106,24 @@ interface BreadcrumbItem {
 }
 
 const authStore = useAuthStore()
+const userStore = useUserStore()
 const route = useRoute()
 const router = useRouter()
 
 // Reactive refs from store
 const { access_token, uniqueAccountId, accountOrganisation, isLoggedIn } =
     storeToRefs(authStore)
+const { loading, error } = storeToRefs(userStore)
 
 // Component state
-const user = ref<User | null>(null)
-const allUsers = ref<User[]>([])
-const loading = ref(true)
-const error = ref<string | null>(null)
+const { selectedUser } = storeToRefs(userStore)
+const user = selectedUser
 
 // Get user ID from route params
-const userId = computed(() => route.params.id as string)
+const userId = computed<number | null>(() => {
+  const id = route.params.id
+  return Array.isArray(id) || !id ? null : Number(id)
+})
 
 const items = computed<BreadcrumbItem[]>(() => [
     {
@@ -148,66 +147,14 @@ const items = computed<BreadcrumbItem[]>(() => [
     },
 ])
 
-const fetchUser = async () => {
-    if (!access_token.value) {
-        error.value = 'Authorization token not found. Please log in.'
-        loading.value = false
-        return
-    }
+const getUser = async () => {
+  if (!userId.value) {
+    error.value = 'No user selected'
+    loading.value = false
+    return
+  }
 
-    if (!isLoggedIn.value) {
-        error.value = 'Please log in to view user information.'
-        loading.value = false
-        return
-    }
-
-    if (!userId.value) {
-        error.value = 'User ID is required.'
-        loading.value = false
-        return
-    }
-
-    try {
-        const data = await $fetch(`/api/v1/users/get-user/${userId.value}`, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                Authorization: `Bearer ${access_token.value}`,
-            },
-            baseURL: useRuntimeConfig().public.apiBase,
-        })
-
-        console.log('Fetched user data:', data)
-
-        // Handle different possible response formats
-        if (data && typeof data === 'object') {
-            if (Array.isArray(data) && data.length > 0) {
-                user.value = data[0]
-            } else if (!Array.isArray(data)) {
-                user.value = data as User
-            } else {
-                error.value = 'User not found.'
-            }
-        } else {
-            error.value = 'Invalid response format.'
-        }
-    } catch (e: any) {
-        console.error('Failed to fetch user:', e)
-
-        if (e.status === 401) {
-            error.value = 'Session expired. Please log in again.'
-            handleLogout()
-        } else if (e.status === 403) {
-            error.value =
-                'Access denied. You do not have permission to view this user.'
-        } else if (e.status === 404) {
-            error.value = 'User not found.'
-        } else {
-            error.value = e.message || 'Failed to load user. Please try again.'
-        }
-    } finally {
-        loading.value = false
-    }
+  await userStore.getUser(userId.value)
 }
 
 // Optional: Fetch all users for context (if needed)
@@ -234,8 +181,7 @@ const fetchAllUsers = async () => {
 
 onMounted(() => {
     console.log('User detail page mounted for user:', userId.value)
-    fetchUser()
-    fetchAllUsers()
+    getUser()
 })
 
 function handleLogout() {

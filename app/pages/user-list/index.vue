@@ -73,10 +73,10 @@ import UserCreateForm from '~/components/forms/UserCreateForm.vue'
 import GlobalModal from '~/components/GlobalModal.vue'
 
 interface User {
-    id: string
+    id: number
     email: string
     full_name: string
-    user_id: string
+    user_id: number
 }
 
 interface BreadcrumbItem {

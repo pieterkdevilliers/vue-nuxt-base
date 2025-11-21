@@ -125,7 +125,7 @@ export const useUserStore = defineStore('user', () => {
                     baseURL: useRuntimeConfig().public.apiBase,
                 }
             )
-            selectedUser.value = data
+            selectedUser.value = data as User
             upsertUserInList(data)
             return data
         } catch (err: any) {
