@@ -17,16 +17,23 @@
                 :loading="loading"
                 :error="error"
                 class="border-none shadow-none bg-transparent p-0 m-0"
-            >
-            </UPageCard>
+            />
         </template>
     </UPageHeader>
+
     <UPageGrid>
         <UPageCard
             @click="$router.push('/user-list')"
-            class="mt-6 cursor-pointer"
+            class="mt-6 cursor-pointer group"
+            :ui="{
+                header: 'flex flex-row justify-between items-center w-full group-hover:text-blue-500',
+            }"
         >
-            <template #header>Account Users</template>
+            <template #header>
+                <h2 class="text-lg font-semibold">Account Users</h2>
+                <UIcon name="i-lucide-info" class="w-6 h-6" />
+            </template>
+
             <p>Number of Users: {{ users.length }}</p>
             <p>Account Unique ID: {{ uniqueAccountId }}</p>
         </UPageCard>
@@ -43,7 +50,6 @@ import type { BreadcrumbItem } from '@nuxt/ui'
 const authStore = useAuthStore()
 const userStore = useUserStore()
 
-// Use storeToRefs to make store values reactive
 const {
     access_token: apiAuthorizationToken,
     uniqueAccountId,
@@ -53,7 +59,6 @@ const {
 
 const { users, isLoading, error } = storeToRefs(userStore)
 
-// Make breadcrumb items reactive
 const items = computed<BreadcrumbItem[]>(() => [
     {
         label: 'My Accounts',
@@ -82,7 +87,6 @@ onMounted(async () => {
 
     try {
         await userStore.fetchUsers(uniqueAccountId.value!)
-        // users.value is now automatically updated via storeToRefs
         console.log('Fetched users via store:', userStore.users)
     } catch (e: any) {
         console.error('Error fetching users via store:', e)
