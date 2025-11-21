@@ -157,28 +157,6 @@ const getUser = async () => {
   await userStore.getUser(userId.value)
 }
 
-// Optional: Fetch all users for context (if needed)
-const fetchAllUsers = async () => {
-    if (!uniqueAccountId.value) return
-
-    try {
-        const data = await $fetch(`/api/v1/users/${uniqueAccountId.value}`, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                Authorization: `Bearer ${access_token.value}`,
-            },
-            baseURL: useRuntimeConfig().public.apiBase,
-        })
-
-        if (Array.isArray(data)) {
-            allUsers.value = data
-        }
-    } catch (e) {
-        console.warn('Could not fetch all users:', e)
-    }
-}
-
 onMounted(() => {
     console.log('User detail page mounted for user:', userId.value)
     getUser()
