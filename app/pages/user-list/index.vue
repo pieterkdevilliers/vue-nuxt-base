@@ -16,6 +16,13 @@
             </div>
         </template>
     </UPageHeader>
+    <UButton
+        label="Add New User"
+        color="primary"
+        variant="subtle"
+        @click="openCreateUserModal"
+        class="mb-4"
+    />
 
     <div v-if="error" class="mt-6">
         <UAlert
@@ -27,19 +34,6 @@
     </div>
 
     <div v-else-if="users.length">
-        <UModal
-            title="Add New User"
-            :close="{
-                color: 'neutral',
-                variant: 'ghost',
-            }"
-        >
-            <UButton label="Add New User" color="primary" variant="subtle" />
-
-            <template #body>
-                <UserCreateForm @submitted="handleAccountSubmitted" />
-            </template>
-        </UModal>
         <UPageGrid class="mt-6">
             <UPageCard
                 v-for="user in users"
@@ -74,7 +68,9 @@ import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '~/stores/auth'
 import { useRouter } from 'vue-router'
-import { userCreateForm } from '~/components/forms/UserCreateForm.vue'
+import { useUserStore } from '~/stores/user'
+import UserCreateForm from '~/components/forms/UserCreateForm.vue'
+import GlobalModal from '~/components/GlobalModal.vue'
 
 interface User {
     id: string
@@ -91,6 +87,10 @@ interface BreadcrumbItem {
 
 const authStore = useAuthStore()
 const router = useRouter()
+const userStore = useUserStore()
+
+const overlay = useOverlay()
+const userModal = overlay.create(GlobalModal)
 
 // Reactive refs from store
 const { accountOrganisation, isLoggedIn, access_token, uniqueAccountId } =
@@ -215,4 +215,26 @@ const refreshUsers = () => {
 defineExpose({
     refreshUsers,
 })
+
+// --- Modal functions (with added login checks) ---
+
+function openCreateUserModal() {
+    if (!authStore.isLoggedIn) {
+        alert('You must be logged in to create a user.')
+        return
+    }
+    userModal.open({
+        title: 'Create New User',
+        component: markRaw(UserCreateForm),
+        componentProps: {},
+        onSubmitted: async (newUser) => {
+            console.log('User submitted successfully:', newUser)
+            await userStore.fetchUsers() // Re-fetch after creation
+            userModal.close()
+        },
+        onModalClose: () => {
+            userModal.close()
+        },
+    })
+}
 </script>
