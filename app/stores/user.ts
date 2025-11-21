@@ -1,25 +1,52 @@
 // stores/user.ts
 import { defineStore } from 'pinia'
-import { useAuthStore } from '~/stores/auth'
 import { ref } from 'vue'
+import { useAuthStore } from '~/stores/auth'
+
+interface Account {
+    id: number | string
+    account_organisation: string
+    account_unique_id?: string
+}
 
 interface User {
-    id: string
+    id: number
     email: string
-    full_name: string
+    full_name?: string
+    accounts?: Account[]
+}
+
+interface UserBasic {
+    id: number
+    email: string
+    full_name?: string
 }
 
 interface UserCreatePayload {
     email: string
     password: string
     full_name: string
-    account_ids: string[]
+    account_ids: number[]
 }
 
-type CreateUserInput = UserCreatePayload | { user: UserCreatePayload }
+interface UserUpdatePayload {
+    email?: string
+    full_name?: string
+}
+
+interface UserToAccountPayload {
+    email: string
+    password?: string
+    full_name?: string
+}
+
+interface MessageResponse {
+    message: string
+}
 
 export const useUserStore = defineStore('user', () => {
-    const users = ref<User[]>([])
+    const users = ref<UserBasic[]>([])
+    const selectedUser = ref<User | null>(null)
     const isLoading = ref(false)
     const error = ref<string | null>(null)
 
@@ -28,7 +55,21 @@ export const useUserStore = defineStore('user', () => {
         return authStore.access_token
     }
 
-    async function fetchUsers() {
+    function upsertUserInList(userData: UserBasic | User) {
+        const idx = users.value.findIndex((u) => u.id === userData.id)
+        const basic: UserBasic = {
+            id: userData.id,
+            email: userData.email,
+            full_name: userData.full_name,
+        }
+        if (idx !== -1) {
+            users.value[idx] = basic
+        } else {
+            users.value.push(basic)
+        }
+    }
+
+    async function fetchUsers(account_unique_id: string) {
         isLoading.value = true
         error.value = null
         try {
@@ -39,36 +80,70 @@ export const useUserStore = defineStore('user', () => {
                 )
             }
 
-            const data = await $fetch<User[]>('/api/v1/users/', {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${apiAuthorizationToken}`,
-                },
-                baseURL: useRuntimeConfig().public.apiBase,
-            })
-            users.value = data
+            const data = await $fetch<UserBasic[]>(
+                `/api/v1/users/${encodeURIComponent(account_unique_id)}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${apiAuthorizationToken}`,
+                    },
+                    baseURL: useRuntimeConfig().public.apiBase,
+                }
+            )
+            users.value = data ?? []
+            return users.value
         } catch (err: any) {
             console.error('Failed to fetch users:', err)
-            error.value = err.message || 'Failed to fetch users.'
+            error.value =
+                err?.data?.detail || err.message || 'Failed to fetch users.'
             throw err
         } finally {
             isLoading.value = false
         }
     }
 
-    async function createUser(userInput: CreateUserInput) {
+    async function getUser(user_id: number) {
         isLoading.value = true
         error.value = null
         try {
-            const payload: UserCreatePayload =
-                (userInput as any)?.user ?? (userInput as UserCreatePayload)
-
-            if (!payload?.email || !payload?.password || !payload?.full_name) {
+            const apiAuthorizationToken = getAuthorizationToken()
+            if (!apiAuthorizationToken) {
                 throw new Error(
-                    'All user fields are required. User payload: ' +
-                        JSON.stringify(userInput)
+                    'Authorization token is missing. Please log in.'
                 )
+            }
+
+            const data = await $fetch<User>(
+                `/api/v1/users/get-user/${encodeURIComponent(String(user_id))}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${apiAuthorizationToken}`,
+                    },
+                    baseURL: useRuntimeConfig().public.apiBase,
+                }
+            )
+            selectedUser.value = data
+            upsertUserInList(data)
+            return data
+        } catch (err: any) {
+            console.error('Failed to get user:', err)
+            error.value =
+                err?.data?.detail || err.message || 'Failed to get user.'
+            throw err
+        } finally {
+            isLoading.value = false
+        }
+    }
+
+    async function createUser(payload: UserCreatePayload) {
+        isLoading.value = true
+        error.value = null
+        try {
+            if (!payload.email || !payload.password || !payload.full_name) {
+                throw new Error('Email, password, and full name are required.')
             }
 
             const apiAuthorizationToken = getAuthorizationToken()
@@ -78,34 +153,123 @@ export const useUserStore = defineStore('user', () => {
                 )
             }
 
-            // const newUserResponse = await $fetch<User>('/api/v1/users/', {
-            const newUserResponse = await $fetch<User>(
-                'https://webhook.site/dfe82329-6128-4fe3-8fd3-8d3c08673772',
+            const newUser = await $fetch<User>(`/api/v1/users/`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${apiAuthorizationToken}`,
+                },
+                baseURL: useRuntimeConfig().public.apiBase,
+                body: JSON.stringify(payload),
+            })
+
+            upsertUserInList(newUser)
+            return newUser
+        } catch (err: any) {
+            console.error('Error creating user:', err)
+            error.value =
+                err?.data?.detail || err.message || 'Failed to create user.'
+            throw err
+        } finally {
+            isLoading.value = false
+        }
+    }
+
+    async function updateUser(user_id: number, payload: UserUpdatePayload) {
+        isLoading.value = true
+        error.value = null
+        try {
+            const apiAuthorizationToken = getAuthorizationToken()
+            if (!apiAuthorizationToken) {
+                throw new Error(
+                    'Authorization token is missing. Please log in.'
+                )
+            }
+
+            const updatedUser = await $fetch<User>(
+                `${useRuntimeConfig().public.apiBase}/api/v1/users/${encodeURIComponent(String(user_id))}`,
                 {
-                    method: 'POST',
+                    method: 'PUT',
+                    body: JSON.stringify(payload),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${apiAuthorizationToken}`,
+                    },
+                }
+            )
+
+            upsertUserInList(updatedUser)
+            if (selectedUser.value?.id === updatedUser.id) {
+                selectedUser.value = updatedUser
+            }
+            return updatedUser
+        } catch (err: any) {
+            console.error('Error updating user:', err)
+            error.value =
+                err?.data?.detail || err.message || 'Failed to update user.'
+            throw err
+        } finally {
+            isLoading.value = false
+        }
+    }
+
+    async function addUserToAccount(
+        accountIds: number[],
+        userPayload: UserToAccountPayload
+    ) {
+        isLoading.value = true
+        error.value = null
+        try {
+            if (!Array.isArray(accountIds) || accountIds.length === 0) {
+                throw new Error('At least one account ID is required.')
+            }
+            if (!userPayload?.email) {
+                throw new Error('User email is required.')
+            }
+
+            const apiAuthorizationToken = getAuthorizationToken()
+            if (!apiAuthorizationToken) {
+                throw new Error(
+                    'Authorization token is missing. Please log in.'
+                )
+            }
+
+            const updatedUser = await $fetch<User>(
+                `/api/v1/users/add-user-to-account/`,
+                {
+                    method: 'PUT',
+                    query: {
+                        account_id: accountIds,
+                    },
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${apiAuthorizationToken}`,
                     },
-                    // baseURL: useRuntimeConfig().public.apiBase,
-                    baseURL: '',
-                    body: payload,
+                    baseURL: useRuntimeConfig().public.apiBase,
+                    body: JSON.stringify(userPayload),
                 }
             )
 
-            users.value.push(newUserResponse)
-            return newUserResponse
+            upsertUserInList(updatedUser)
+            if (selectedUser.value?.id === updatedUser.id) {
+                selectedUser.value = updatedUser
+            }
+            return updatedUser
         } catch (err: any) {
-            console.error('Error creating user:', err)
-            error.value = err.message || 'Failed to create user.'
+            console.error('Error adding user to account:', err)
+            error.value =
+                err?.data?.detail ||
+                err.message ||
+                'Failed to add user to account.'
             throw err
         } finally {
             isLoading.value = false
         }
     }
 
-    async function updateUser(id: string, payload: Partial<UserCreatePayload>) {
+    async function removeUserFromAccount(user_id: number, account_id: number) {
         isLoading.value = true
         error.value = null
         try {
@@ -116,37 +280,37 @@ export const useUserStore = defineStore('user', () => {
                 )
             }
 
-            const updatedUserResponse = await $fetch<User>(
-                `/api/v1/users/${id}`,
+            const res = await $fetch<MessageResponse>(
+                `/api/v1/users/remove-user-from-account/`,
                 {
                     method: 'PUT',
-                    body: payload,
+                    query: { user_id, account_id },
                     headers: {
-                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
                         Authorization: `Bearer ${apiAuthorizationToken}`,
                     },
                     baseURL: useRuntimeConfig().public.apiBase,
                 }
             )
 
-            const index = users.value.findIndex((user) => user.id === id)
-            if (index !== -1 && updatedUserResponse) {
-                users.value[index] = updatedUserResponse
+            // Optionally refresh selected user data if currently selected
+            if (selectedUser.value?.id === user_id) {
+                await getUser(user_id)
             }
-            return updatedUserResponse
+            return res
         } catch (err: any) {
-            console.error('Error updating user:', err)
-            error.value = err.message || 'Failed to update user.'
+            console.error('Error removing user from account:', err)
+            error.value =
+                err?.data?.detail ||
+                err.message ||
+                'Failed to remove user from account.'
             throw err
         } finally {
             isLoading.value = false
         }
     }
 
-    async function deleteUser(
-        id: string,
-        payload: { account_unique_id: string }
-    ) {
+    async function deleteUser(user_id: number) {
         isLoading.value = true
         error.value = null
         try {
@@ -157,33 +321,50 @@ export const useUserStore = defineStore('user', () => {
                 )
             }
 
-            await $fetch<void>(`/api/v1/users/${id}`, {
-                method: 'DELETE',
-                body: payload,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${apiAuthorizationToken}`,
-                },
-                baseURL: useRuntimeConfig().public.apiBase,
-            })
+            await $fetch<void>(
+                `${useRuntimeConfig().public.apiBase}/api/v1/users/${encodeURIComponent(String(user_id))}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${apiAuthorizationToken}`,
+                    },
+                }
+            )
 
-            users.value = users.value.filter((user) => user.id !== id)
+            users.value = users.value.filter((u) => u.id !== user_id)
+            if (selectedUser.value?.id === user_id) {
+                selectedUser.value = null
+            }
         } catch (err: any) {
             console.error('Error deleting user:', err)
-            error.value = err.message || 'Failed to delete user.'
+            error.value =
+                err?.data?.detail || err.message || 'Failed to delete user.'
             throw err
         } finally {
             isLoading.value = false
         }
     }
 
+    function reset() {
+        users.value = []
+        selectedUser.value = null
+        isLoading.value = false
+        error.value = null
+    }
+
     return {
         users,
+        selectedUser,
         isLoading,
         error,
         fetchUsers,
+        getUser,
         createUser,
         updateUser,
+        addUserToAccount,
+        removeUserFromAccount,
         deleteUser,
+        reset,
     }
 })
