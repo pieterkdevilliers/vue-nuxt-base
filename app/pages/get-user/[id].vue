@@ -33,30 +33,28 @@
 
     <div v-else-if="user" class="mt-6">
         <UPageGrid>
-            <UPageCard :title="`User ID: ${route.params.id}`">
+            <UPageCard
+                :ui="{
+                    header: 'flex flex-row justify-between items-center w-full',
+                }"
+            >
                 <template #header>
                     <h2 class="text-lg font-semibold">User Information</h2>
-                    <UModal
-                        title="Edit User: {{ user.full_name }}"
-                        :close="{
-                            color: 'neutral',
-                            variant: 'ghost',
-                        }"
-                    >
-                        <UButton
-                            label="Edit User"
-                            color="primary"
-                            variant="subtle"
-                        />
-
-                    </UModal>
+                    <UButton
+                        label="Edit User"
+                        color="secondary"
+                        variant="outline"
+                        size="sm"
+                        icon="i-lucide-edit"
+                        @click.stop="openUpdateUserModal(user)"
+                    />
                 </template>
                 <template #default>
                     <div class="space-y-4">
                         <div>
-                            <h3 class="text-xl font-semibold">
+                            <strong>
                                 {{ user.full_name }}
-                            </h3>
+                            </strong>
                             <p class="text-gray-600">{{ user.email }}</p>
                         </div>
 
@@ -91,6 +89,9 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '~/stores/auth'
 import { useUserStore } from '~/stores/user'
 import { useRoute, useRouter } from 'vue-router'
+import type { UserBasic } from '~/types/user'
+import UserUpdateForm from '~/components/forms/UserUpdateForm.vue'
+import GlobalModal from '~/components/GlobalModal.vue'
 
 interface User {
     id: string
@@ -110,6 +111,9 @@ const userStore = useUserStore()
 const route = useRoute()
 const router = useRouter()
 
+const overlay = useOverlay()
+const userModal = overlay.create(GlobalModal)
+
 // Reactive refs from store
 const { access_token, uniqueAccountId, accountOrganisation, isLoggedIn } =
     storeToRefs(authStore)
@@ -121,8 +125,8 @@ const user = selectedUser
 
 // Get user ID from route params
 const userId = computed<number | null>(() => {
-  const id = route.params.id
-  return Array.isArray(id) || !id ? null : Number(id)
+    const id = route.params.id
+    return Array.isArray(id) || !id ? null : Number(id)
 })
 
 const items = computed<BreadcrumbItem[]>(() => [
@@ -148,13 +152,13 @@ const items = computed<BreadcrumbItem[]>(() => [
 ])
 
 const getUser = async () => {
-  if (!userId.value) {
-    error.value = 'No user selected'
-    loading.value = false
-    return
-  }
+    if (!userId.value) {
+        error.value = 'No user selected'
+        loading.value = false
+        return
+    }
 
-  await userStore.getUser(userId.value)
+    await userStore.getUser(userId.value)
 }
 
 onMounted(() => {
@@ -165,6 +169,28 @@ onMounted(() => {
 function handleLogout() {
     authStore.clearAll()
     router.push('/')
+}
+
+function openUpdateUserModal(user: UserBasic) {
+    if (!authStore.isLoggedIn) {
+        alert('You must be logged in to update a user.')
+        return
+    }
+    userModal.open({
+        title: user.full_name ? `Edit User: ${user.full_name}` : 'Edit User',
+        component: markRaw(UserUpdateForm),
+        componentProps: {
+            userToUpdate: user,
+        },
+        onSubmitted: async (updatedUser) => {
+            console.log('User updated successfully:', updatedUser)
+            // await fetchUsers() // wrapper uses uniqueAccountId
+            userModal.close()
+        },
+        onModalClose: () => {
+            userModal.close()
+        },
+    })
 }
 
 // Set page meta

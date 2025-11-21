@@ -20,9 +20,9 @@
         label="Add New User"
         icon="i-lucide-plus"
         color="primary"
-        variant="subtle"
+        variant="outline"
+        size="xs"
         @click="openCreateUserModal"
-        class="mb-4"
     />
 
     <div v-if="error" class="mt-6">
@@ -35,17 +35,23 @@
     </div>
 
     <div v-else-if="users.length">
-        <UPageGrid class="mt-6">
+        <UPageGrid class="mt-4">
             <UPageCard
                 v-for="user in users"
                 :key="user.id"
-                :title="user.full_name || user.email"
                 @click="handleSelectUser(user)"
-                class="cursor-pointer"
+                class="cursor-pointer group"
                 :ui="{
+                    header: 'flex flex-row justify-between items-center w-full group-hover:text-blue-500',
                     footer: 'flex justify-end items-center w-full border-t border-slate-200 py-2 mt-6 pb-0',
                 }"
             >
+                <template #header>
+                    <h2 class="text-lg font-semibold">
+                        {{ user.full_name || 'No Name Provided' }}
+                    </h2>
+                    <UIcon name="i-lucide-info" class="w-6 h-6" />
+                </template>
                 <template #description>
                     <p>ID: {{ user.id }}</p>
                     <p>Email: {{ user.email }}</p>
