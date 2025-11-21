@@ -12,21 +12,23 @@ interface User {
 
 interface AuthState {
     access_token: string | null
-    uniqueAccountId: string | null
+    uniqueAccountId: string | ''
     accountOrganisation: string | null
     userId: string | null
     userEmail: string | null
     selectedUser: User | null
+    activeAccountId?: number | null
 }
 
 export const useAuthStore = defineStore('auth', {
     state: (): AuthState => ({
         access_token: null,
-        uniqueAccountId: null,
+        uniqueAccountId: '',
         accountOrganisation: null,
         userId: null,
         userEmail: null,
         selectedUser: null,
+        activeAccountId: null,
     }),
 
     getters: {
@@ -50,7 +52,7 @@ export const useAuthStore = defineStore('auth', {
         },
 
         clearUniqueAccountId() {
-            this.uniqueAccountId = null
+            this.uniqueAccountId = ''
         },
 
         setAccountOrganisation(org: string) {
@@ -89,14 +91,23 @@ export const useAuthStore = defineStore('auth', {
             this.userEmail = null
         },
 
+        setActiveAccountId(accountId: number) {
+            this.activeAccountId = accountId
+        },
+
+        clearActiveAccountId() {
+            this.activeAccountId = null
+        },
+
         // New action to clear ALL auth-related state and persisted items
         clearAll() {
             this.access_token = null
-            this.uniqueAccountId = null
+            this.uniqueAccountId = ''
             this.accountOrganisation = null
             this.userId = null
             this.userEmail = null
             this.selectedUser = null
+            this.activeAccountId = null
             // IMPORTANT: If you want to explicitly clear cookies/localStorage for persisted state
             // during logout, you might need to use the `paths` option or a specific action
             // provided by the persisted state plugin. For now, setting to null
