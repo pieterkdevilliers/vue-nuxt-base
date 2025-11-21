@@ -51,7 +51,7 @@ const {
     isLoggedIn,
 } = storeToRefs(authStore)
 
-const { users, loading, error } = storeToRefs(userStore)
+const { users, isLoading, error } = storeToRefs(userStore)
 
 // Make breadcrumb items reactive
 const items = computed<BreadcrumbItem[]>(() => [
@@ -70,13 +70,13 @@ onMounted(async () => {
     if (!apiAuthorizationToken.value) {
         console.log('API Authorization Token is missing')
         error.value = 'Authorization token not found. Please log in.'
-        loading.value = false
+        isLoading.value = false
         return
     }
 
     if (!uniqueAccountId.value) {
         error.value = 'No account selected'
-        loading.value = false
+        isLoading.value = false
         return
     }
 
@@ -88,7 +88,7 @@ onMounted(async () => {
         console.error('Error fetching users via store:', e)
         error.value = 'Failed to load users'
     } finally {
-        loading.value = false
+        isLoading.value = false
     }
 })
 </script>

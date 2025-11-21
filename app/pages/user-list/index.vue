@@ -90,6 +90,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '~/stores/user'
 import UserCreateForm from '~/components/forms/UserCreateForm.vue'
 import UserUpdateForm from '~/components/forms/UserUpdateForm.vue'
+import UserDeleteForm from '~/components/forms/UserDeleteForm.vue'
 import type { UserBasic } from '~/types/user'
 import GlobalModal from '~/components/GlobalModal.vue'
 
@@ -253,7 +254,7 @@ function openDeleteUserModal(user: UserBasic) {
         title: user.full_name
             ? `Delete User: ${user.full_name}`
             : 'Delete User',
-        // component: markRaw(UserDeleteForm),
+        component: markRaw(UserDeleteForm),
         componentProps: {
             userToDelete: user,
         },
