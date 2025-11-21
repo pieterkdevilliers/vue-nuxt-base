@@ -14,6 +14,7 @@
 
     <UButton
         label="Add New Account"
+        icon="i-lucide-plus"
         color="primary"
         variant="subtle"
         @click="openCreateAccountModal"
