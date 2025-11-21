@@ -37,9 +37,11 @@
 import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '~/stores/auth'
+import { useUserStore } from '~/stores/user'
 import type { BreadcrumbItem } from '@nuxt/ui'
 
 const authStore = useAuthStore()
+const userStore = useUserStore()
 
 // Use storeToRefs to make store values reactive
 const {
@@ -49,10 +51,7 @@ const {
     isLoggedIn,
 } = storeToRefs(authStore)
 
-// Define a ref to store the accounts data
-const loading = ref(true)
-const error = ref<string | null>(null)
-const users = ref<any[]>([])
+const { users, loading, error } = storeToRefs(userStore)
 
 // Make breadcrumb items reactive
 const items = computed<BreadcrumbItem[]>(() => [
@@ -75,19 +74,21 @@ onMounted(async () => {
         return
     }
 
+    if (!uniqueAccountId.value) {
+        error.value = 'No account selected'
+        loading.value = false
+        return
+    }
+
     try {
-        const data = await $fetch(`/api/v1/users/${uniqueAccountId.value}`, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                Authorization: `Bearer ${apiAuthorizationToken.value}`,
-            },
-            baseURL: useRuntimeConfig().public.apiBase,
-        })
-        users.value = data
-        console.log('Fetched users:', users)
+        await userStore.fetchUsers(uniqueAccountId.value!)
+        // users.value is now automatically updated via storeToRefs
+        console.log('Fetched users via store:', userStore.users)
     } catch (e: any) {
-        console.error('Error during onMounted:', e)
+        console.error('Error fetching users via store:', e)
+        error.value = 'Failed to load users'
+    } finally {
+        loading.value = false
     }
 })
 </script>
