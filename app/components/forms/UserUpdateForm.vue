@@ -27,12 +27,6 @@
 import { ref, watch } from 'vue'
 import { useUserStore } from '~/stores/user'
 
-// interface Account {
-//     id: string
-//     account_organisation: string
-//     account_unique_id?: string
-// }
-
 const props = defineProps<{
     userToUpdate: UserBasic
 }>()
