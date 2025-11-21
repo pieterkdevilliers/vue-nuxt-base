@@ -5,21 +5,47 @@
         @submit="handleSubmit"
         class="space-y-4"
     >
-        <UFormField label="Confirm Email" name="email" required>
+        <!-- <UFormField label="Confirm Email" name="email" required>
             <UInput v-model="formData.email" />
-        </UFormField>
+        </UFormField> -->
+        <UAlert color="error" class="mb-4 font-bold">
+            <template #title class="alert__title text-center">
+                <UIcon
+                    name="lucide-alert-triangle"
+                    class="w-8 h-8 block mx-auto"
+                />
+                <strong class="block mx-auto text-center my-1 text-xl"
+                    >Warning</strong
+                >
+            </template>
+            <template #description class="alert__description">
+                <p class="text-center">
+                    Are you sure you want to delete the user
+                    <strong>{{ props.userToDelete.full_name }}</strong> with
+                    email <strong>{{ props.userToDelete.email }}</strong
+                    >?
+                </p>
+                <p class="mt-2 text-center">This action cannot be undone.</p>
+            </template>
+        </UAlert>
 
-        <div class="flex justify-end space-x-2">
-            <UButton color="gray" variant="ghost" @click="emit('close')"
-                >Cancel</UButton
-            >
+        <div class="flex justify-between mt-6">
             <UButton
-                color="danger"
+                color="neutral"
+                variant="outline"
+                @click="emit('close')"
+                icon="lucide-x"
+            >
+                Cancel
+            </UButton>
+            <UButton
+                color="error"
+                variant="solid"
                 type="submit"
                 :loading="isLoading"
-                icon="i-heroicons-skull"
+                icon="lucide-trash"
             >
-                Delete Account
+                Delete User
             </UButton>
         </div>
     </UForm>
