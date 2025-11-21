@@ -5,7 +5,7 @@
         @submit="handleSubmit"
         class="space-y-4"
     >
-        <UFormField label="Account Unique ID" name="account_unique_id" required>
+        <!-- <UFormField label="Account Unique ID" name="account_unique_id" required>
             <UInput v-model="formData.account_unique_id" />
         </UFormField>
 
@@ -20,6 +20,51 @@
                 icon="i-heroicons-check"
                 >Delete Account</UButton
             >
+        </div> -->
+        <UAlert color="error" class="mb-4 font-bold">
+            <template #title class="alert__title text-center">
+                <UIcon
+                    name="lucide-alert-triangle"
+                    class="w-8 h-8 block mx-auto"
+                />
+                <strong class="block mx-auto text-center my-1 text-xl"
+                    >Warning</strong
+                >
+            </template>
+            <template #description class="alert__description">
+                <p class="text-center">
+                    Are you sure you want to delete the account
+                    <strong>{{
+                        props.accountToDelete.account_organisation
+                    }}</strong>
+                    with ID
+                    <strong>{{
+                        props.accountToDelete.account_unique_id
+                    }}</strong
+                    >?
+                </p>
+                <p class="mt-2 text-center">This action cannot be undone.</p>
+            </template>
+        </UAlert>
+
+        <div class="flex justify-between mt-6">
+            <UButton
+                color="neutral"
+                variant="outline"
+                @click="emit('close')"
+                icon="lucide-x"
+            >
+                Cancel
+            </UButton>
+            <UButton
+                color="error"
+                variant="solid"
+                type="submit"
+                :loading="isLoading"
+                icon="lucide-trash"
+            >
+                Delete User
+            </UButton>
         </div>
     </UForm>
 </template>

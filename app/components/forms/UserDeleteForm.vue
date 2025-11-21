@@ -5,9 +5,6 @@
         @submit="handleSubmit"
         class="space-y-4"
     >
-        <!-- <UFormField label="Confirm Email" name="email" required>
-            <UInput v-model="formData.email" />
-        </UFormField> -->
         <UAlert color="error" class="mb-4 font-bold">
             <template #title class="alert__title text-center">
                 <UIcon
