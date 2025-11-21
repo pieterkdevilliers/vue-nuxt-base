@@ -221,6 +221,7 @@ function openCreateUserModal() {
         },
     })
 }
+
 function openUpdateUserModal(user: UserBasic) {
     if (!authStore.isLoggedIn) {
         alert('You must be logged in to update a user.')
@@ -234,6 +235,30 @@ function openUpdateUserModal(user: UserBasic) {
         },
         onSubmitted: async (updatedUser) => {
             console.log('User updated successfully:', updatedUser)
+            await fetchUsers() // wrapper uses uniqueAccountId
+            userModal.close()
+        },
+        onModalClose: () => {
+            userModal.close()
+        },
+    })
+}
+
+function openDeleteUserModal(user: UserBasic) {
+    if (!authStore.isLoggedIn) {
+        alert('You must be logged in to delete a user.')
+        return
+    }
+    userModal.open({
+        title: user.full_name
+            ? `Delete User: ${user.full_name}`
+            : 'Delete User',
+        // component: markRaw(UserDeleteForm),
+        componentProps: {
+            userToDelete: user,
+        },
+        onSubmitted: async (deletedUser) => {
+            console.log('User deleted successfully:', deletedUser)
             await fetchUsers() // wrapper uses uniqueAccountId
             userModal.close()
         },
