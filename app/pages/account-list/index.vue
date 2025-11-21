@@ -1,7 +1,7 @@
 <template>
     <UPageHeader
         title="Accounts"
-        class="mb-6 flex justify-between items-center upage-header"
+        class="mb-8 flex justify-between items-center upage-header"
     >
         <template #links>
             <UButton v-if="authStore.isLoggedIn" @click="handleLogout"
@@ -10,21 +10,22 @@
         </template>
     </UPageHeader>
 
-    <h2 class="text-xl font-semibold">Account List</h2>
-
-    <UButton
-        label="Add New Account"
-        icon="i-lucide-plus"
-        color="primary"
-        variant="subtle"
-        @click="openCreateAccountModal"
-        class="mb-4"
-        :disabled="!authStore.isLoggedIn"
-    />
+    <div class="flex justify-start items-center gap-4">
+        <h2 class="text-xl font-semibold">Account List</h2>
+        <UButton
+            label="Add New Account"
+            icon="i-lucide-plus"
+            color="primary"
+            variant="outline"
+            size="xs"
+            @click="openCreateAccountModal"
+            :disabled="!authStore.isLoggedIn"
+        />
+    </div>
     <!-- Disable if not logged in -->
 
     <div v-if="accountStore.accounts.length">
-        <UPageGrid>
+        <UPageGrid class="mt-4">
             <UPageCard
                 v-for="account in accountStore.accounts"
                 :key="account.id"
