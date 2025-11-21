@@ -40,10 +40,28 @@
                 :key="user.id"
                 :title="user.full_name"
                 @click="handleSelectUser(user)"
+                class="cursor-pointer"
+                :ui="{
+                    footer: 'flex justify-end items-center w-full border-t border-slate-200 py-2 mt-6 pb-0',
+                }"
             >
                 <template #description>
                     <p>ID: {{ user.id }}</p>
                     <p>Email: {{ user.email }}</p>
+                </template>
+                <template #footer>
+                    <UButton
+                        color="secondary"
+                        variant="ghost"
+                        @click.stop="openUpdateAccountModal(account)"
+                        icon="i-lucide-edit"
+                    />
+                    <UButton
+                        color="error"
+                        variant="ghost"
+                        @click.stop="openDeleteAccountModal(account)"
+                        icon="i-lucide-trash"
+                    />
                 </template>
             </UPageCard>
         </UPageGrid>
@@ -115,13 +133,13 @@ const items = computed<BreadcrumbItem[]>(() => [
 ])
 
 const fetchUsers = async () => {
-  if (!uniqueAccountId.value) {
-    error.value = 'No account selected'
-    loading.value = false
-    return
-  }
+    if (!uniqueAccountId.value) {
+        error.value = 'No account selected'
+        loading.value = false
+        return
+    }
 
-  await userStore.fetchUsers(uniqueAccountId.value!)
+    await userStore.fetchUsers(uniqueAccountId.value!)
 }
 
 onMounted(() => {
@@ -187,7 +205,7 @@ function openCreateUserModal() {
 
             // Now safely refresh using the string uniqueAccountId
             if (uniqueAccountId.value) {
-                await fetchUsers()  // ← This re-uses your existing function!
+                await fetchUsers() // ← This re-uses your existing function!
             }
 
             useToast().add({
@@ -198,7 +216,6 @@ function openCreateUserModal() {
 
             userModal.close()
         },
-
     })
 }
 </script>
