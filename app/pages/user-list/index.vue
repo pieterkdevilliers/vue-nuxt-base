@@ -95,11 +95,7 @@ const userModal = overlay.create(GlobalModal)
 // Reactive refs from store
 const { accountOrganisation, isLoggedIn, access_token, uniqueAccountId } =
     storeToRefs(authStore)
-
-// Component state
-const users = ref<User[]>([])
-const loading = ref(true)
-const error = ref<string | null>(null)
+const { users, loading, error } = storeToRefs(userStore)
 
 const items = computed<BreadcrumbItem[]>(() => [
     {
@@ -119,62 +115,13 @@ const items = computed<BreadcrumbItem[]>(() => [
 ])
 
 const fetchUsers = async () => {
-    if (!access_token.value) {
-        error.value = 'Authorization token not found. Please log in.'
-        loading.value = false
-        return
-    }
+  if (!uniqueAccountId.value) {
+    error.value = 'No account selected'
+    loading.value = false
+    return
+  }
 
-    if (!isLoggedIn.value) {
-        error.value = 'Please log in to view user information.'
-        loading.value = false
-        return
-    }
-
-    if (!uniqueAccountId.value) {
-        error.value = 'Account ID not found. Please select an account first.'
-        loading.value = false
-        return
-    }
-
-    try {
-        const data = await $fetch(`/api/v1/users/${uniqueAccountId.value}`, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                Authorization: `Bearer ${access_token.value}`,
-            },
-            baseURL: useRuntimeConfig().public.apiBase,
-        })
-
-        console.log('Fetched users data:', data)
-
-        // Ensure data is an array
-        if (Array.isArray(data)) {
-            users.value = data
-        } else {
-            console.warn('Expected array but got:', typeof data, data)
-            users.value = []
-            error.value = 'Invalid data format received from server.'
-        }
-    } catch (e: any) {
-        console.error('Failed to fetch users:', e)
-
-        // Handle different types of errors
-        if (e.status === 401) {
-            error.value = 'Session expired. Please log in again.'
-            handleLogout()
-        } else if (e.status === 403) {
-            error.value =
-                'Access denied. You do not have permission to view users.'
-        } else if (e.status === 404) {
-            error.value = 'Users not found for this account.'
-        } else {
-            error.value = e.message || 'Failed to load users. Please try again.'
-        }
-    } finally {
-        loading.value = false
-    }
+  await userStore.fetchUsers(uniqueAccountId.value!)
 }
 
 onMounted(() => {
@@ -227,14 +174,31 @@ function openCreateUserModal() {
         title: 'Create New User',
         component: markRaw(UserCreateForm),
         componentProps: {},
-        onSubmitted: async (newUser) => {
-            console.log('User submitted successfully:', newUser)
-            await userStore.fetchUsers() // Re-fetch after creation
+        onSubmitted: async (newUser: any) => {
+            console.log('User created:', newUser)
+
+            // Instant optimistic update (feels magical)
+            users.value.unshift({
+                id: newUser.id,
+                email: newUser.email,
+                full_name: newUser.full_name || newUser.email.split('@')[0],
+                user_id: newUser.id,
+            })
+
+            // Now safely refresh using the string uniqueAccountId
+            if (uniqueAccountId.value) {
+                await fetchUsers()  // ← This re-uses your existing function!
+            }
+
+            useToast().add({
+                title: 'User created!',
+                description: 'Added to the account.',
+                icon: 'i-heroicons-check-circle',
+            })
+
             userModal.close()
         },
-        onModalClose: () => {
-            userModal.close()
-        },
+
     })
 }
 </script>

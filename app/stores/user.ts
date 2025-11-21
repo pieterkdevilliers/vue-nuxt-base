@@ -152,7 +152,8 @@ export const useUserStore = defineStore('user', () => {
                     'Authorization token is missing. Please log in.'
                 )
             }
-
+            console.log('active account id:', useAuthStore().activeAccountId)
+            console.log('Creating user with payload:', payload)
             const newUser = await $fetch<User>(`/api/v1/users/`, {
                 method: 'POST',
                 headers: {

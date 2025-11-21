@@ -80,6 +80,7 @@ import AccountCreateForm from '~/components/forms/AccountCreateForm.vue'
 import AccountUpdateForm from '~/components/forms/AccountUpdateForm.vue'
 import AccountDeleteForm from '~/components/forms/AccountDeleteForm.vue'
 import GlobalModal from '~/components/GlobalModal.vue'
+import auth from '~/middleware/auth'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -202,6 +203,7 @@ function handleLogout() {
 function handleSelectAccount(account: any) {
     authStore.setUniqueAccountId(account.account_unique_id)
     authStore.setAccountOrganisation(account.account_organisation)
+    authStore.setActiveAccountId(account.id)
     router.push('/my-account')
 }
 </script>

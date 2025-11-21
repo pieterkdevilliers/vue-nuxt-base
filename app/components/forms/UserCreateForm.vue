@@ -46,7 +46,7 @@ const formData = ref({
         email: userEmail,
         password: '',
         full_name: '',
-        account_ids: [] as string[],
+        account_ids: [] as number[],
     },
 })
 
@@ -64,10 +64,21 @@ const rules = {
 async function handleSubmit() {
     isLoading.value = true
     try {
-        const newUser = await userStore.createUser(formData.value.user)
+        // Create the payload with the active account pre-filled
+        const payload = {
+            email: formData.value.user.email.trim(),
+            password: formData.value.user.password || '',
+            full_name: formData.value.user.full_name.trim() || '',
+            // This is now guaranteed to be number[]
+            account_ids: authStore.activeAccountId
+                ? [authStore.activeAccountId]  // ← number
+                : [] as number[],
+        }
+
+        const newUser = await userStore.createUser(payload)
 
         formData.value = {
-            user: { email: '', password: '', full_name: '', account_ids: [] },
+            user: { email: '', password: '', full_name: '', account_ids: [] as number[] },
         }
 
         emit('submitted', newUser)
