@@ -242,12 +242,6 @@ function openCreateUserModal() {
                 await fetchUsers() // ← This re-uses your existing function!
             }
 
-            useToast().add({
-                title: 'User created!',
-                description: 'Added to the account.',
-                icon: 'i-heroicons-check-circle',
-            })
-
             userModal.close()
         },
     })
