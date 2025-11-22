@@ -5,22 +5,6 @@
         @submit="handleSubmit"
         class="space-y-4"
     >
-        <!-- <UFormField label="Account Unique ID" name="account_unique_id" required>
-            <UInput v-model="formData.account_unique_id" />
-        </UFormField>
-
-        <div class="flex justify-end space-x-2">
-            <UButton color="gray" variant="ghost" @click="emit('close')"
-                >Cancel</UButton
-            >
-            <UButton
-                color="danger"
-                type="submit"
-                :loading="isLoading"
-                icon="i-heroicons-check"
-                >Delete Account</UButton
-            >
-        </div> -->
         <UAlert color="error" class="mb-4 font-bold">
             <template #title class="alert__title text-center">
                 <UIcon

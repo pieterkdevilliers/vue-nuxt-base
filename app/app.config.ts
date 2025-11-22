@@ -46,5 +46,23 @@ export default defineAppConfig({
                 links: 'pageHeader__links',
             },
         },
+        pageCard: {
+            slots: {
+                root: 'card__root',
+                container: 'card__container',
+                wrapper: 'card__wrapper',
+                header: 'card__header',
+                body: 'card__body',
+                footer: 'card__footer',
+                title: 'card__title',
+                description: 'card__description',
+            },
+        },
+        button: {
+            slots: {
+                base: ['button__base'],
+            },
+            label: 'button__label',
+        },
     },
 })
