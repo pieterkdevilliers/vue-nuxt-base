@@ -1,19 +1,43 @@
 <!-- pages/user-list/index.vue -->
 <template>
-    <UPageHeader class="mb-6 flex justify-between items-center upage-header">
+    <UPageHeader
+        class="mb-6 flex justify-between items-center upage-header"
+        :ui="{
+            links: 'gap-6',
+        }"
+    >
         <template #title>
             <h1>Users</h1>
             <ClientOnly>
                 <UBreadcrumb
                     separator-icon="i-lucide-arrow-right"
                     :items="items"
+                    class="mt-3"
                 />
             </ClientOnly>
         </template>
         <template #links>
-            <div v-if="authStore.isLoggedIn">
-                <UButton @click="handleLogout">Log Out</UButton>
-            </div>
+            <UPageCard
+                :title="`Account: ${accountOrganisation}`"
+                :description="`Account ID: ${uniqueAccountId}`"
+                :loading="isLoading"
+                :error="error"
+                :ui="{
+                    container: 'p-0 lg:p-3',
+                    title: 'text-sm font-medium',
+                    description: 'text-xs',
+                }"
+                class="border-none shadow-none bg-transparent p-0 m-0 text-sm"
+            />
+            <UButton
+                v-if="authStore.isLoggedIn"
+                @click="handleLogout"
+                color="primary"
+                variant="outline"
+                size="sm"
+                icon="i-lucide-log-out"
+                >Log Out</UButton
+            >
         </template>
     </UPageHeader>
     <UButton
