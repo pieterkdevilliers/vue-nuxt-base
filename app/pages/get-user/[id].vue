@@ -1,19 +1,45 @@
 <!-- pages/get-user/[id].vue -->
 <template>
-    <div class="flex justify-between">
-        <div class="flex flex-col gap-4">
-            <h1 class="text-green-500 text-2xl">User Details</h1>
+    <UPageHeader
+        class="mb-6 flex justify-between items-center upage-header"
+        :ui="{
+            links: 'gap-6',
+        }"
+    >
+        <template #title>
+            <h1>User Details</h1>
             <ClientOnly>
                 <UBreadcrumb
                     separator-icon="i-lucide-arrow-right"
                     :items="items"
+                    class="mt-3"
                 />
             </ClientOnly>
-        </div>
-        <div v-if="authStore.isLoggedIn">
-            <UButton @click="handleLogout">Log Out</UButton>
-        </div>
-    </div>
+        </template>
+        <template #links>
+            <UPageCard
+                :title="`Account: ${accountOrganisation}`"
+                :description="`Account ID: ${uniqueAccountId}`"
+                :loading="isLoading"
+                :error="error"
+                :ui="{
+                    container: 'p-0 lg:p-3',
+                    title: 'text-sm font-medium',
+                    description: 'text-xs',
+                }"
+                class="border-none shadow-none bg-transparent p-0 m-0 text-sm"
+            />
+            <UButton
+                v-if="authStore.isLoggedIn"
+                @click="handleLogout"
+                color="primary"
+                variant="outline"
+                size="sm"
+                icon="i-lucide-log-out"
+                >Log Out</UButton
+            >
+        </template>
+    </UPageHeader>
 
     <div v-if="error" class="mt-6">
         <UAlert
@@ -31,8 +57,8 @@
         </div>
     </div>
 
-    <div v-else-if="user" class="mt-6">
-        <UPageGrid>
+    <div v-else-if="user">
+        <UPageGrid class="mt-4">
             <UPageCard
                 :ui="{
                     header: 'flex flex-row justify-between items-center w-full',
