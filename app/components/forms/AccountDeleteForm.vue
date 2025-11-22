@@ -63,7 +63,7 @@
                 :loading="isLoading"
                 icon="lucide-trash"
             >
-                Delete User
+                Delete Account
             </UButton>
         </div>
     </UForm>
